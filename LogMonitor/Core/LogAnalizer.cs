@@ -1,0 +1,102 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LogMonitor.Core
+{
+   public class LogAnalizer
+   {
+      private DateTime _lastScan;
+      Dictionary<string, PluginLog> _pluginsLog = new Dictionary<string, PluginLog>();
+      private bool _lastLogIsPlugin;
+      private PluginLog _pluginLog;
+      private LogEntry _logEntry;
+      private string _username;     
+
+      public LogAnalizer (DateTime lastScan)
+      {
+         _lastScan = lastScan;         
+      }
+
+      public Dictionary<string, PluginLog> PluginsLog { get { return _pluginsLog; } }
+
+      public void AnalisLogLines(string[] logLines, string filename)
+      {
+         _pluginLog = null;
+         _lastLogIsPlugin = false;
+         _logEntry = null;
+         _username = filename;
+
+         foreach (var line in logLines)
+         {
+            analisLine(line);
+         }         
+      }
+
+      private void analisLine(string line)
+      {
+         if (line.StartsWith("2015"))
+         {
+            // проверка даты лога (сравнение с последней датой сбора логов)
+            if (checkLogDate(line))
+            {
+               string msgLine = getLineMsg(line);
+               if (msgLine.StartsWith("Plugin "))
+               {
+                  msgLine = msgLine.Substring(7);
+                  string pluginName = msgLine.Substring(0, msgLine.IndexOf(' '));                  
+                  if (!_pluginsLog.TryGetValue(pluginName, out _pluginLog))
+                  {
+                     _pluginLog = new PluginLog(pluginName);
+                     _pluginsLog.Add(_pluginLog.PluginName, _pluginLog);
+                  }
+                  msgLine = msgLine.Substring(pluginName.Length + 1);
+                  if (!_pluginLog.Logs.TryGetValue(_username, out _logEntry))
+                  {
+                     _logEntry = new LogEntry(_username);
+                     _pluginLog.Logs.Add(_username, _logEntry);
+                  }
+                  _logEntry.Logs += string.Format("\n{0}", line);
+                  _lastLogIsPlugin = true;
+               }
+               else
+               {
+                  _lastLogIsPlugin = false;
+               }
+            }
+         }
+         else
+         {
+            if (_lastLogIsPlugin)
+            {
+               _logEntry.Logs += string.Format("\n{0}", line);
+            }
+         }
+      }
+
+      private string getLineMsg(string line)
+      {
+         // из строки вида:
+         // 2015-09-17 21:28:31.5454_Info:  Версия автокада - 20.1.0.0
+         // вернуть
+         // Версия автокада - 20.1.0.0         
+         return line.Substring(line.IndexOf("  ")+2); //Версия автокада - 20.1.0.0
+      }
+
+      private bool checkLogDate(string line)
+      {
+         DateTime logTime;
+         string dateText = line.Substring(0, line.IndexOf('_'));
+         if (DateTime.TryParse(dateText, out logTime))
+         {
+            if (logTime > _lastScan)
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+   }
+}
