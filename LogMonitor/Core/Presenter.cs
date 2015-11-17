@@ -23,7 +23,9 @@ namespace LogMonitor.Core
          StringBuilder sbBody = new StringBuilder();
          foreach (var pluginLog in _pluginsLog)
          {
-            sbBody.AppendLine(string.Format("{0}", pluginLog.Value.PluginName));            
+            sbBody.AppendLine();
+            sbBody.AppendLine(string.Format("{0}", pluginLog.Value.PluginName));
+            sbBody.AppendLine();
             foreach (var logEntry in pluginLog.Value.Logs)
             {
                sbBody.AppendLine(string.Format("\n{0}", logEntry.Value.UserName));               
@@ -35,7 +37,7 @@ namespace LogMonitor.Core
 
       public DataTable GetDataTable()
       {
-         DataTable table = new DataTable("Отчет лог монитормнга");
+         DataTable table = new DataTable("Отчет лог мониторинга");
 
          var colUserName = table.Columns.Add("Usernane");
          var colLog = table.Columns.Add("Log");
