@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LogMonitor.Core
 {
    public class LogAnalizer
    {
-      private DateTime _lastScan;
-      Dictionary<string, PluginLog> _pluginsLog = new Dictionary<string, PluginLog>();
       private bool _lastLogIsPlugin;
-      private PluginLog _pluginLog;
+      private DateTime _lastScan;
       private LogEntry _logEntry;
-      private string _username;     
+      private PluginLog _pluginLog;
+      private Dictionary<string, PluginLog> _pluginsLog = new Dictionary<string, PluginLog>();
+      private string _username;
 
-      public LogAnalizer (DateTime lastScan)
+      public LogAnalizer(DateTime lastScan)
       {
-         _lastScan = lastScan;         
+         _lastScan = lastScan;
       }
 
       public Dictionary<string, PluginLog> PluginsLog { get { return _pluginsLog; } }
@@ -32,7 +29,7 @@ namespace LogMonitor.Core
          foreach (var line in logLines)
          {
             analisLine(line);
-         }         
+         }
       }
 
       private void analisLine(string line)
@@ -46,7 +43,7 @@ namespace LogMonitor.Core
                if (msgLine.StartsWith("Plugin "))
                {
                   msgLine = msgLine.Substring(7);
-                  string pluginName = msgLine.Substring(0, msgLine.IndexOf(' '));                  
+                  string pluginName = msgLine.Substring(0, msgLine.IndexOf(' '));
                   if (!_pluginsLog.TryGetValue(pluginName, out _pluginLog))
                   {
                      _pluginLog = new PluginLog(pluginName);
@@ -76,15 +73,6 @@ namespace LogMonitor.Core
          }
       }
 
-      private string getLineMsg(string line)
-      {
-         // из строки вида:
-         // 2015-09-17 21:28:31.5454_Info:  Версия автокада - 20.1.0.0
-         // вернуть
-         // Версия автокада - 20.1.0.0         
-         return line.Substring(line.IndexOf("  ")+2); //Версия автокада - 20.1.0.0
-      }
-
       private bool checkLogDate(string line)
       {
          DateTime logTime;
@@ -97,6 +85,15 @@ namespace LogMonitor.Core
             }
          }
          return false;
+      }
+
+      private string getLineMsg(string line)
+      {
+         // из строки вида:
+         // 2015-09-17 21:28:31.5454_Info:  Версия автокада - 20.1.0.0
+         // вернуть
+         // Версия автокада - 20.1.0.0
+         return line.Substring(line.IndexOf("  ") + 2); //Версия автокада - 20.1.0.0
       }
    }
 }

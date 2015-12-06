@@ -35,6 +35,7 @@
          this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
          this.label1 = new System.Windows.Forms.Label();
          this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+         this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
          this.SuspendLayout();
          // 
          // buttonStart
@@ -116,5 +117,6 @@
       private System.Windows.Forms.NotifyIcon notifyIcon1;
       private System.Windows.Forms.Label label1;
       private System.Windows.Forms.RichTextBox richTextBox1;
+      private System.ComponentModel.BackgroundWorker backgroundWorker1;
    }
 }

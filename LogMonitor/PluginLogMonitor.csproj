@@ -56,6 +56,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -66,6 +67,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\AllUsers\ADUtils.cs" />
+    <Compile Include="Core\AllUsers\FormMonitorAcadUsers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Core\AllUsers\FormMonitorAcadUsers.Designer.cs">
+      <DependentUpon>FormMonitorAcadUsers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\AllUsers\MonitorAcadUsers.cs" />
+    <Compile Include="Core\AllUsers\ReportAllUsers.cs" />
+    <Compile Include="Core\AllUsers\UserInfo.cs" />
     <Compile Include="Core\EmailLog.cs" />
     <Compile Include="Core\LogAnalizer.cs" />
     <Compile Include="Core\LogEntry.cs" />
@@ -90,6 +101,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Core\AllUsers\FormMonitorAcadUsers.resx">
+      <DependentUpon>FormMonitorAcadUsers.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormLog.resx">
       <DependentUpon>FormLog.cs</DependentUpon>
     </EmbeddedResource>

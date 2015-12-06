@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LogMonitor.Core
 {
    public class Presenter
    {
-      private Dictionary<string, PluginLog> _pluginsLog;      
+      private Dictionary<string, PluginLog> _pluginsLog;
 
       public Presenter(Dictionary<string, PluginLog> pluginsLog)
       {
@@ -22,17 +20,17 @@ namespace LogMonitor.Core
       {
          StringBuilder sbBody = new StringBuilder();
          foreach (var pluginLog in _pluginsLog)
-         {            
-            sbBody.AppendLine(string.Format("{0}", pluginLog.Value.PluginName));            
+         {
+            sbBody.AppendLine(string.Format("{0}", pluginLog.Value.PluginName));
             foreach (var logEntry in pluginLog.Value.Logs)
             {
                sbBody.AppendLine(" ");
                sbBody.AppendLine(string.Format("\n{0}", logEntry.Value.UserName));
                sbBody.AppendLine(" ");
-               sbBody.AppendLine(string.Format("{0}", logEntry.Value.Logs));               
+               sbBody.AppendLine(string.Format("{0}", logEntry.Value.Logs));
             }
          }
-         return sbBody.ToString(); 
+         return sbBody.ToString();
       }
 
       public DataTable GetDataTable()
@@ -69,7 +67,7 @@ namespace LogMonitor.Core
          }
 
          string fileName = Path.Combine(LogService.LocalSavePath, string.Format("PluginLogs-{0}.{1}", date, "txt"));
-         
+
          try
          {
             File.WriteAllText(fileName, body);
@@ -77,7 +75,7 @@ namespace LogMonitor.Core
          catch (Exception ex)
          {
             MessageBox.Show(ex.ToString());
-         }         
+         }
       }
    }
 }
