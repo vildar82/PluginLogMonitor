@@ -100,7 +100,6 @@
          this.Controls.Add(this.buttonStop);
          this.Controls.Add(this.buttonStart);
          this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-         this.MaximizeBox = false;
          this.Name = "FormLog";
          this.ShowInTaskbar = false;
          this.Text = "Plugin Log Monitor";

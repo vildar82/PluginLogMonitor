@@ -34,7 +34,7 @@ namespace LogMonitor.Core
 
       private void analisLine(string line)
       {
-         if (line.StartsWith("2015"))
+         if (lineIsLog(line))
          {
             // проверка даты лога (сравнение с последней датой сбора логов)
             if (checkLogDate(line))
@@ -71,6 +71,20 @@ namespace LogMonitor.Core
                _logEntry.Logs += string.Format("\n{0}", line);
             }
          }
+      }
+
+      private bool lineIsLog(string line)
+      {
+         DateTime dateTimeLine;
+         if (line.Length>25)
+         {
+            string startDateTimeLine = line.Substring(0, 24);
+            if (DateTime.TryParse(startDateTimeLine, out dateTimeLine))
+            {
+               return true;
+            }
+         }         
+         return false;
       }
 
       private bool checkLogDate(string line)
