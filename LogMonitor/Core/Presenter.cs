@@ -21,13 +21,13 @@ namespace LogMonitor.Core
          StringBuilder sbBody = new StringBuilder();
          foreach (var pluginLog in _pluginsLog)
          {
-            sbBody.AppendLine(string.Format("{0}", pluginLog.Value.PluginName));
+            sbBody.AppendLine($"{pluginLog.Value.PluginName}");
             foreach (var logEntry in pluginLog.Value.Logs)
             {
                sbBody.AppendLine(" ");
-               sbBody.AppendLine(string.Format("\n{0}", logEntry.Value.UserName));
+               sbBody.AppendLine($"\n{logEntry.Value.UserName}");
                sbBody.AppendLine(" ");
-               sbBody.AppendLine(string.Format("{0}", logEntry.Value.Logs));
+               sbBody.AppendLine($"{logEntry.Value.Logs}");
             }
          }
          return sbBody.ToString();
