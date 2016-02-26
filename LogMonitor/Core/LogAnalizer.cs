@@ -43,13 +43,21 @@ namespace LogMonitor.Core
                if (msgLine.StartsWith("Plugin "))
                {
                   msgLine = msgLine.Substring(7);
-                  string pluginName = msgLine.Substring(0, msgLine.IndexOf(' '));
+                  string pluginName;
+                  try
+                  {
+                     pluginName = msgLine.Substring(0, msgLine.IndexOf(' '));
+                     msgLine = msgLine.Substring(pluginName.Length + 1);
+                  }
+                  catch
+                  {
+                     pluginName = msgLine;
+                  }
                   if (!_pluginsLog.TryGetValue(pluginName, out _pluginLog))
                   {
                      _pluginLog = new PluginLog(pluginName);
                      _pluginsLog.Add(_pluginLog.PluginName, _pluginLog);
-                  }
-                  msgLine = msgLine.Substring(pluginName.Length + 1);
+                  }                  
                   if (!_pluginLog.Logs.TryGetValue(_username, out _logEntry))
                   {
                      _logEntry = new LogEntry(_username);
