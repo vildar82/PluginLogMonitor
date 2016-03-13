@@ -11,7 +11,7 @@ namespace LogMonitor.Core
    // Следит за логами. собирает логи плагинов. отправляет сводку
    public class LogService
    {
-      private static string _localSavePath = @"c:\temp\test\Logs";
+      private static string _localSavePath = @"c:\work\test\Logs";
       private string _body;
       private DateTime _lastScan;
       private string _logPath = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
