@@ -43,11 +43,12 @@ namespace LogMonitor.Core.AllUsers
         private void Parse()
         {
             UsersAD = ADUtils.GetUsersInGroup(GroupAD);
-            var logFiles = Directory.GetFiles(LogFolder, "*.log", SearchOption.TopDirectoryOnly);
+            DirectoryInfo dirLogInfo = new DirectoryInfo(LogFolder);
+            var logFiles = dirLogInfo.GetFiles("*.log", SearchOption.TopDirectoryOnly).OrderByDescending(f=>f.LastWriteTime);
             // Поиск пользователей в логах
             foreach (var log in logFiles)
-            {
-                getUserInLog(log);
+            {   
+                getUserInLog(log.FullName);
             }
             // Проверка пользователей
             CheckUsersInLog();
@@ -184,16 +185,17 @@ namespace LogMonitor.Core.AllUsers
                     userlog.Login = userAD.Login;
                     userlog.GroupAD = userAD.GroupAD;
                 }
-            }
-            var lines = File.ReadAllLines(log, Encoding.Default).Reverse();
-            // поиск строки успешного выполнения настроек - "Профиль ПИК установлен."
-            findLastSuccessSetting(userlog, lines);
-            // Поиск последней ошибки
-            findLastError(userlog, lines);
-            // Поиск группы AutoCAD (шифр отдела)
-            findUserGroupAcad(userlog, lines);
-            // Версия Net Framework
-            findNetVersion(userlog, lines);
+
+                var lines = File.ReadAllLines(log, Encoding.Default).Reverse();
+                // поиск строки успешного выполнения настроек - "Профиль ПИК установлен."
+                findLastSuccessSetting(userlog, lines);
+                // Поиск последней ошибки
+                findLastError(userlog, lines);
+                // Поиск группы AutoCAD (шифр отдела)
+                findUserGroupAcad(userlog, lines);
+                // Версия Net Framework
+                findNetVersion(userlog, lines);
+            }            
         }
 
         private void findNetVersion(UserInfo userlog, IEnumerable<string> lines)
@@ -208,7 +210,7 @@ namespace LogMonitor.Core.AllUsers
                     try
                     {
                         Version ver = Version.Parse(value);
-                        if (userlog.NetVersion != null && userlog.NetVersion < ver)
+                        if (userlog.NetVersion == null || userlog.NetVersion < ver)
                         {
                             userlog.NetVersion = ver;
                         }

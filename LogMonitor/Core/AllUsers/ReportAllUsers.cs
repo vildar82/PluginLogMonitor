@@ -12,14 +12,14 @@ namespace LogMonitor.Core.AllUsers
         {
             StringBuilder report = new StringBuilder("Отчет по всем пользователям настроек AutoCAD\n");
 
-            report.AppendFormat($"\n:Версии .NET Framework:");
+            report.AppendLine($"\n:Версии .NET Framework:");
             var netVers = apm.UsersLog.GroupBy(u => u.NetVersion).OrderByDescending(g => g.Count());            
             foreach (var ver in netVers)
             {
-                report.AppendFormat($"\n\t{ver.Key} - {ver.Count()}");
+                report.AppendLine($"\t{ver.Key} - {ver.Count()}");
             }
 
-            report.AppendFormat("\nГруппа AD: {0}, Папка логов: {1}\n", apm.GroupAD, apm.LogFolder);
+            report.AppendFormat("\n\nГруппа AD: {0}, Папка логов: {1}\n", apm.GroupAD, apm.LogFolder);
             report.AppendFormat("\nUsersAD Пользователей в группе AD настроек AutoCAD: {0}", apm.UsersAD.Count);
             report.AppendFormat("\nUsersLog Пользователей в логах у которых все ок: {0}", apm.UsersLog.Count);
             report.AppendLine("\n\nПользователей с ошибками");
