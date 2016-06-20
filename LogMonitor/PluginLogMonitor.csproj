@@ -54,8 +54,13 @@
     <ApplicationIcon>Resources\compass.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EPPlus, Version=4.0.5.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.0.5\lib\net20\EPPlus.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -81,6 +86,14 @@
     <Compile Include="Core\LogAnalizer.cs" />
     <Compile Include="Core\LogEntry.cs" />
     <Compile Include="Core\LogService.cs" />
+    <Compile Include="Core\NewUser\FormNewUsers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Core\NewUser\FormNewUsers.Designer.cs">
+      <DependentUpon>FormNewUsers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\NewUser\NewUserInfo.cs" />
+    <Compile Include="Core\NewUser\NewUserService.cs" />
     <Compile Include="Core\PluginLog.cs" />
     <Compile Include="Core\Presenter.cs" />
     <Compile Include="FormLog.cs">
@@ -104,6 +117,9 @@
     <EmbeddedResource Include="Core\AllUsers\FormMonitorAcadUsers.resx">
       <DependentUpon>FormMonitorAcadUsers.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Core\NewUser\FormNewUsers.resx">
+      <DependentUpon>FormNewUsers.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormLog.resx">
       <DependentUpon>FormLog.cs</DependentUpon>
     </EmbeddedResource>
@@ -113,6 +129,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources\compass.ico" />
   </ItemGroup>
   <ItemGroup>
