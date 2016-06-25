@@ -8,14 +8,15 @@ namespace LogMonitor.Core.AllUsers
 {
     public static class ADUtils
     {
-        const string domainName = "picompany.ru";               
+        const string domainName = "picompany.ru";
+        const string domainDsk2 = "dsk2.picompany.ru";
 
         /// <summary>
         /// Получить базовый основной контекст
         /// </summary>        
-        public static PrincipalContext GetPrincipalContext ()
+        public static PrincipalContext GetPrincipalContext (string domain = domainName)
         {
-            return new PrincipalContext( ContextType.Domain);
+            return new PrincipalContext(ContextType.Domain, domain);
         }
 
         /// <summary>
@@ -24,8 +25,14 @@ namespace LogMonitor.Core.AllUsers
         /// <param name="sUserName">Имя пользователя для извлечения</param>        
         public static UserPrincipal GetUser (string sUserName)
         {
-            PrincipalContext oPrincipalContext = GetPrincipalContext();
-            return UserPrincipal.FindByIdentity(oPrincipalContext, IdentityType.SamAccountName, sUserName);
+            PrincipalContext context = GetPrincipalContext();
+            var res = UserPrincipal.FindByIdentity(context, IdentityType.SamAccountName, sUserName);
+            if (res == null)
+            {
+                context = GetPrincipalContext(domainDsk2);
+                res = UserPrincipal.FindByIdentity(context, IdentityType.SamAccountName, sUserName);
+            }
+            return res;
         }
 
         public static List<UserInfo> GetUsersInGroup (string groupName)
