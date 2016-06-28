@@ -14,8 +14,9 @@ namespace LogMonitor.Core.AllUsers
         /// <summary>
         /// Получить базовый основной контекст
         /// </summary>        
-        public static PrincipalContext GetPrincipalContext (string domain = domainName)
+        public static PrincipalContext GetPrincipalContext (string domain = null)
         {
+            if (domain == null) return new PrincipalContext(ContextType.Domain);
             return new PrincipalContext(ContextType.Domain, domain);
         }
 
