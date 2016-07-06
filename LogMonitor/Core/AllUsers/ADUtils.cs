@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace LogMonitor.Core.AllUsers
 {
@@ -40,7 +41,7 @@ namespace LogMonitor.Core.AllUsers
         {
             //string groupName = "adm-dsk3-AutoCADSettings-u";
             List<UserInfo> users = new List<UserInfo>();
-            var ctx = GetPrincipalContext();            
+            var ctx = GetPrincipalContext(domainName);            
             GroupPrincipal group = GroupPrincipal.FindByIdentity(ctx, groupName);
             if (group != null)
             {
@@ -50,7 +51,7 @@ namespace LogMonitor.Core.AllUsers
             }
             else
             {
-                throw new Exception("Группа не найдена");
+                MessageBox.Show($"Группа не найдена - {groupName}");
             }
             return users;
         }

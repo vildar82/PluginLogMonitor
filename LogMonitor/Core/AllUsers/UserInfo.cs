@@ -11,13 +11,14 @@ namespace LogMonitor.Core.AllUsers
         public string Login = string.Empty;
         public string Name = string.Empty;
         public Version NetVersion;
+        public Version AcadVersion;
 
-      public UserInfo(string name, string login, string group)
+        public UserInfo(string name, string login, string group)
         {
             Name = name;
             Login = login;
             GroupAD = group;
-        }
+        }        
 
         public int CompareTo(UserInfo other)
         {

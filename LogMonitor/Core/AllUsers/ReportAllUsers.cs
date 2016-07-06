@@ -19,6 +19,13 @@ namespace LogMonitor.Core.AllUsers
                 report.AppendLine($"\t{ver.Key} - {ver.Count()}");
             }
 
+            report.AppendLine($"\n:Версии AutoCAD:");
+            var acadVers = apm.UsersLog.GroupBy(u => u.AcadVersion).OrderByDescending(g => g.Count());
+            foreach (var ver in acadVers)
+            {
+                report.AppendLine($"\t{ver.Key} - {ver.Count()}");
+            }
+
             report.AppendFormat("\n\nГруппа AD: {0}, Папка логов: {1}\n", apm.GroupAD, apm.LogFolder);
             report.AppendFormat("\nUsersAD Пользователей в группе AD настроек AutoCAD: {0}", apm.UsersAD.Count);
             report.AppendFormat("\nUsersLog Пользователей в логах у которых все ок: {0}", apm.UsersLog.Count);

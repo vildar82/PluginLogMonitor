@@ -144,8 +144,8 @@ namespace LogMonitor.Core.AllUsers
                     }
                 }
             }
-            UsersErorInLog.ForEach(e => UsersLog.Remove(e));
-            UsersErorLongSuccess.ForEach(e => UsersLog.Remove(e));
+            //UsersErorInLog.ForEach(e => UsersLog.Remove(e));
+            //UsersErorLongSuccess.ForEach(e => UsersLog.Remove(e));
         }
 
         private string getLoginByFileLogNam(string log)
@@ -195,12 +195,37 @@ namespace LogMonitor.Core.AllUsers
                 findUserGroupAcad(userlog, lines);
                 // Версия Net Framework
                 findNetVersion(userlog, lines);
+                //Версия автокада
+                findAcadVer(userlog, lines);
             }            
+        }
+
+        private void findAcadVer (UserInfo userlog, IEnumerable<string> lines)
+        {
+            foreach (var line in lines.Reverse())
+            {
+                string searchInput = "Версия автокада -";
+                var index = line.IndexOf(searchInput, StringComparison.OrdinalIgnoreCase);
+                if (index > 0)
+                {
+                    var value = line.Substring(index + searchInput.Length).Trim();
+                    try
+                    {
+                        Version ver = Version.Parse(value);
+                        if (userlog.AcadVersion == null || userlog.AcadVersion < ver)
+                        {
+                            userlog.AcadVersion = ver;
+                        }
+                    }
+                    catch { }
+                    return;
+                }
+            }
         }
 
         private void findNetVersion(UserInfo userlog, IEnumerable<string> lines)
         {
-            foreach (var line in lines)
+            foreach (var line in lines.Reverse())
             {
                 string searchInput = "Версия среды .NET Framework -";
                 var index = line.IndexOf(searchInput, StringComparison.OrdinalIgnoreCase);
@@ -216,6 +241,7 @@ namespace LogMonitor.Core.AllUsers
                         }
                     }
                     catch { }
+                    return;
                 }
             }
         }
