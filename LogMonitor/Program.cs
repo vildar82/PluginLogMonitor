@@ -5,7 +5,7 @@ namespace LogMonitor
 {
     public static class Program
     {
-        public const string FileExcelUserList = @"\\dsk2.picompany.ru\project\CAD_Settings\Settings\Users\UserList2.xlsx";
+        public const string FileExcelUserList = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Users\UserList2.xlsx";
 
         [STAThread]
         private static void Main ()
