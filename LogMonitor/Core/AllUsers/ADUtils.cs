@@ -71,7 +71,7 @@ namespace LogMonitor.Core.AllUsers
                 foreach (SearchResult sr in src)
                 {
                     var name = sr.Properties["name"][0].ToString();
-                    if (name.StartsWith("fld-dsk3-ECP_", StringComparison.OrdinalIgnoreCase))
+                    if (name.StartsWith("fld-ECP_", StringComparison.OrdinalIgnoreCase))
                     {
                         res.Add(name);
                     }
