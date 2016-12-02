@@ -156,7 +156,7 @@ namespace LogMonitor.Core.NewUser
         private static string getWorkGroupName (string group)
         {
             if (group.Contains("_GP") || group.Contains("_KG")) return "ГП";
-            if (group.Contains("_AR")) return "АР";
+            if (group.Contains("_AR") || group.Contains("_TM")) return "АР";
             if (group.Contains("_AK")) return "АК";
             if (group.Contains("_EO")) return "ЭО";
             if (group.Contains("_OV")) return "ОВ";
@@ -165,7 +165,7 @@ namespace LogMonitor.Core.NewUser
             if (group.Contains("_KR_MN")) return "КР-МН";
             if (group.Contains("_KR_NR")) return "КР-СБ-ГК";
             if (group.Contains("_KR_SB")) return "КР-СБ";
-            if (group.Contains("_RP")) return "РП";
+            if (group.Contains("_RP")) return "РП";            
             return null;
         }
     }
