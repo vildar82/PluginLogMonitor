@@ -2,7 +2,7 @@
 
 namespace LogMonitor.Core.AllUsers
 {
-    public class UserInfo : IComparable<UserInfo>
+    public class UserInfo : IComparable<UserInfo>, IEquatable<UserInfo>
     {
         public string GroupAcad = string.Empty;
         public string GroupAD = string.Empty;
@@ -18,7 +18,12 @@ namespace LogMonitor.Core.AllUsers
             Name = name;
             Login = login;
             GroupAD = group;
-        }        
+        }
+
+        public bool Equals(UserInfo other)
+        {
+            return Login.Equals(other.Login, StringComparison.OrdinalIgnoreCase);
+        }
 
         public int CompareTo(UserInfo other)
         {
@@ -40,6 +45,6 @@ namespace LogMonitor.Core.AllUsers
         {
             return string.Format("Имя: {0}; Логин: {1}; ГруппаAD: {2}; ГруппаAcad: {3}; LastSuccesSetting: {4}; LastError {5}"
                , Name, Login, GroupAD, GroupAcad, LastSuccesSetting, LastError);
-        }
+        }        
     }
 }

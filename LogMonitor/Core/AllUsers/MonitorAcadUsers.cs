@@ -52,6 +52,13 @@ namespace LogMonitor.Core.AllUsers
             }
             // Проверка пользователей
             CheckUsersInLog();
+
+            UsersAD.Sort();
+            UsersErorInLog.Sort();
+            UsersErorInLogNotInAD.Sort();
+            UsersErorNotInLog.Sort();
+            UsersErorLongSuccess.Sort();
+            UsersLog.Sort();
         }
 
         private void SendReport()

@@ -47,10 +47,13 @@ namespace LogMonitor.Core.AllUsers
         }
 
         private static string getReportForUsers(List<UserInfo> users, string title)
-        {
-            StringBuilder res = new StringBuilder(title);
-
-            int i = 1;
+        {            
+            StringBuilder res = new StringBuilder();
+            res.AppendLine();
+            res.AppendLine();
+            res.AppendLine(title);
+            res.AppendLine();            
+            int i = 1;            
             foreach (var user in users)
             {
                 res.AppendFormat("{0} {1}\n", i++, user.ToString());
