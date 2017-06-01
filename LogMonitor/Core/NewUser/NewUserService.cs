@@ -163,7 +163,7 @@ namespace LogMonitor.Core.NewUser
             if (group.Contains("_SS")) return "СС";
             if (group.Contains("_VK")) return "ВК";
             if (group.Contains("_KR_MN")) return "КР-МН";
-            if (group.Contains("_KR_NR")) return "КР-СБ-ГК";
+            if (group.Contains("_KR_NR")) return "КР-МН";
             if (group.Contains("_KR_SB")) return "КР-СБ";
             if (group.Contains("_RP")) return "РП";            
             return null;
