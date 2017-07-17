@@ -13,7 +13,8 @@ namespace LogMonitor.Core.NewUser
         private static readonly List<string> _checkedUsers = new List<string> ();
         private static readonly List<string> _ecpWorkGroups =ADUtils.GetEcpWorkGroups();
         public static List<NewUserInfo> NewUsers { get; } = new List<NewUserInfo>();
-        public static List<string> Errors { get; } = new List<string>();
+	    public static List<string> addNewUsers { get; } = new List<string>();
+		public static List<string> Errors { get; } = new List<string>();
 
 	    public static void RegNewUser(string userLogin, string userGroup)
 	    {
@@ -76,6 +77,7 @@ namespace LogMonitor.Core.NewUser
 		    {
 			    // Не определена рабочая группа пользовтеля - не добавлен в группу ЕЦП
 			    Errors.Add($"Пользователь без группы ЕЦП: user={userName};");
+				addNewUsers.Add(userName);
 		    }
 		    return false;
 	    }

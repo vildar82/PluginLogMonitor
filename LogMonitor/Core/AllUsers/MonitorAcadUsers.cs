@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using LogMonitor.Core.AddNewUsers;
+using LogMonitor.Core.NewUser;
 
 namespace LogMonitor.Core.AllUsers
 {
@@ -48,7 +50,7 @@ namespace LogMonitor.Core.AllUsers
             // Поиск пользователей в логах
             foreach (var log in logFiles)
             {   
-                getUserInLog(log.FullName);
+                GetUserInLog(log.FullName);
             }
             // Проверка пользователей
             CheckUsersInLog();
@@ -59,6 +61,13 @@ namespace LogMonitor.Core.AllUsers
             UsersErorNotInLog.Sort();
             UsersErorLongSuccess.Sort();
             UsersLog.Sort();
+
+			// Новые ползователи
+	        if (NewUserService.addNewUsers?.Any() == true)
+	        {
+		        var formAddNewUsers = new FormAddNewUsers(NewUserService.addNewUsers);
+				formAddNewUsers.Show();
+	        }
         }
 
         private void SendReport()
@@ -68,7 +77,7 @@ namespace LogMonitor.Core.AllUsers
             EmailLog.SendEmail(Report, "Log Monitor All Users AutoCAD Settings");
         }
 
-        private static void findLastError(UserInfo userlog, IEnumerable<string> lines)
+        private static void FindLastError(UserInfo userlog, IEnumerable<string> lines)
         {
             foreach (var line in lines)
             {
@@ -84,7 +93,7 @@ namespace LogMonitor.Core.AllUsers
             }
         }
 
-        private static void findUserGroupAcad(UserInfo userlog, IEnumerable<string> lines)
+        private static void FindUserGroupAcad(UserInfo userlog, IEnumerable<string> lines)
         {
             foreach (var line in lines)
             {
@@ -97,7 +106,7 @@ namespace LogMonitor.Core.AllUsers
             }
         }
 
-        private void findLastSuccessSetting(UserInfo userlog, IEnumerable<string> lines)
+        private void FindLastSuccessSetting(UserInfo userlog, IEnumerable<string> lines)
         {
             foreach (var line in lines)
             {
@@ -117,12 +126,12 @@ namespace LogMonitor.Core.AllUsers
             }
         }
 
-        private List<UserInfo> checkUserNotLog()
+        private List<UserInfo> CheckUserNotLog()
         {
             var checkUserNotLog = new List<UserInfo>();
             foreach (var userAd in UsersAD)
             {
-                if (!UsersLog.Exists(u => isEqualLogins(u.Login, userAd.Login)))
+                if (!UsersLog.Exists(u => IsEqualLogins(u.Login, userAd.Login)))
                 {
                     checkUserNotLog.Add(userAd);
                 }
@@ -132,7 +141,7 @@ namespace LogMonitor.Core.AllUsers
 
         private void CheckUsersInLog()
         {
-            UsersErorNotInLog = checkUserNotLog();
+            UsersErorNotInLog = CheckUserNotLog();
 
             foreach (var userLog in UsersLog)
             {
@@ -155,7 +164,7 @@ namespace LogMonitor.Core.AllUsers
             //UsersErorLongSuccess.ForEach(e => UsersLog.Remove(e));
         }
 
-        private string getLoginByFileLogNam(string log)
+        private static string GetLoginByFileLogNam(string log)
         {
             var res = Path.GetFileNameWithoutExtension(log);
             var indexC = res.IndexOf("-C-"); // англ C
@@ -170,17 +179,17 @@ namespace LogMonitor.Core.AllUsers
             return res.Substring(0, indexC);
         }
 
-        private void getUserInLog(string log)
+        private void GetUserInLog(string log)
         {
             // Определение пользователя по имени лог файла
-            var loginByLog = getLoginByFileLogNam(log);
-            var userlog = UsersLog.Find(u => isEqualLogins(loginByLog, u.Login));
+            var loginByLog = GetLoginByFileLogNam(log);
+            var userlog = UsersLog.Find(u => IsEqualLogins(loginByLog, u.Login));
             if (userlog == null)
             {
                 userlog = new UserInfo(loginByLog, loginByLog, "");
                 UsersLog.Add(userlog);
                 // Поиск пользователя в списке пользователей AD
-                var userAD = UsersAD.Find(u => isEqualLogins(loginByLog, u.Login));
+                var userAD = UsersAD.Find(u => IsEqualLogins(loginByLog, u.Login));
                 if (userAD == null)
                 {
                     // Пользователь которого нет в списке группы АД - возможно это старый пользователь, которого уволили или типа того.
@@ -195,19 +204,19 @@ namespace LogMonitor.Core.AllUsers
 
                 var lines = File.ReadAllLines(log, Encoding.Default).Reverse();
                 // поиск строки успешного выполнения настроек - "Профиль ПИК установлен."
-                findLastSuccessSetting(userlog, lines);
+                FindLastSuccessSetting(userlog, lines);
                 // Поиск последней ошибки
-                findLastError(userlog, lines);
+                FindLastError(userlog, lines);
                 // Поиск группы AutoCAD (шифр отдела)
-                findUserGroupAcad(userlog, lines);
+                FindUserGroupAcad(userlog, lines);
                 // Версия Net Framework
-                findNetVersion(userlog, lines);
+                FindNetVersion(userlog, lines);
                 //Версия автокада
-                findAcadVer(userlog, lines);
+                FindAcadVer(userlog, lines);
             }            
         }
 
-        private void findAcadVer (UserInfo userlog, IEnumerable<string> lines)
+        private static void FindAcadVer (UserInfo userlog, IEnumerable<string> lines)
         {
             foreach (var line in lines.Reverse())
             {
@@ -230,7 +239,7 @@ namespace LogMonitor.Core.AllUsers
             }
         }
 
-        private void findNetVersion(UserInfo userlog, IEnumerable<string> lines)
+        private static void FindNetVersion(UserInfo userlog, IEnumerable<string> lines)
         {
             foreach (var line in lines.Reverse())
             {
@@ -253,7 +262,7 @@ namespace LogMonitor.Core.AllUsers
             }
         }
 
-        private bool isEqualLogins(string loginByLog, string login)
+        private static bool IsEqualLogins(string loginByLog, string login)
         {
             return loginByLog.IndexOf(login, StringComparison.OrdinalIgnoreCase) >= 0;
         }

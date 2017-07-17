@@ -79,6 +79,7 @@
 			this.Controls.Add(this.dgUsers);
 			this.Name = "FormAddNewUsers";
 			this.Text = "FormAddNewUsers";
+			this.Load += new System.EventHandler(this.FormAddNewUsers_Load);
 			((System.ComponentModel.ISupportInitialize)(this.dgUsers)).EndInit();
 			this.ResumeLayout(false);
 

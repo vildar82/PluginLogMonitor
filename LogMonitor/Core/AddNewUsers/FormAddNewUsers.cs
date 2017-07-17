@@ -13,9 +13,21 @@ namespace LogMonitor.Core.AddNewUsers
 {
 	public partial class FormAddNewUsers : Form
 	{
-		public FormAddNewUsers()
+		public FormAddNewUsers() : this(null)
+		{
+			
+		}
+
+		public FormAddNewUsers(List<string> newUsers)
 		{
 			InitializeComponent();
+			if (newUsers?.Any() == true)
+			{
+				foreach (var newUser in newUsers)
+				{
+					dgUsers.Rows.Add(newUser);
+				}
+			}
 		}
 
 		private void buttonOK_Click(object sender, EventArgs e)
@@ -37,6 +49,11 @@ namespace LogMonitor.Core.AddNewUsers
 					MessageBox.Show($"Ошибка регистрации пользователя {user} - {ex}");
 				}
 			}
+		}
+
+		private void FormAddNewUsers_Load(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

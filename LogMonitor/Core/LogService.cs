@@ -28,7 +28,7 @@ namespace LogMonitor.Core
 
 	    public void Start ()
         {
-            setTimer();
+            SetTimer();
             Timer_Elapsed(null, null);
         }
 
@@ -37,7 +37,7 @@ namespace LogMonitor.Core
             _timer.Dispose();
         }
 
-        private Dictionary<string, PluginLog> getPluginsLog ()
+        private Dictionary<string, PluginLog> GetPluginsLog ()
         {
             var dirLog = new DirectoryInfo(_logPath);
             var filesLog = dirLog.GetFiles("*.log");
@@ -50,9 +50,9 @@ namespace LogMonitor.Core
             return logAnalizer.PluginsLog;
         }
 
-        private void scanLogsAndSendReport ()
+        private void ScanLogsAndSendReport ()
         {
-            var pluginsLog = getPluginsLog();
+            var pluginsLog = GetPluginsLog();
             var present = new Presenter(pluginsLog);
             Body = present.GetBody();
             if (!string.IsNullOrEmpty(Body))
@@ -62,19 +62,21 @@ namespace LogMonitor.Core
             present.SaveReport(Body);
         }
 
-        private void setTimer ()
+        private void SetTimer ()
         {
-            _timer = new System.Timers.Timer(FrequencyScanLogHours * 3600000);
-            _timer.AutoReset = true;
-            _timer.Enabled = true;
-            _timer.Elapsed += Timer_Elapsed;
+	        _timer = new System.Timers.Timer(FrequencyScanLogHours * 3600000)
+	        {
+		        AutoReset = true,
+		        Enabled = true
+	        };
+	        _timer.Elapsed += Timer_Elapsed;
         }
 
         private void Timer_Elapsed (object sender, ElapsedEventArgs e)
         {
             try
             {
-                scanLogsAndSendReport();
+                ScanLogsAndSendReport();
             }
             catch (Exception ex)
             {
