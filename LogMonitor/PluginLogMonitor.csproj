@@ -54,15 +54,17 @@
     <ApplicationIcon>Resources\compass.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EPPlus, Version=4.0.5.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPPlus.4.0.5\lib\net20\EPPlus.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPPlus, Version=4.1.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.1.0\lib\net40\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ValueTuple, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -72,6 +74,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\AddNewUsers\FormAddNewUsers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Core\AddNewUsers\FormAddNewUsers.Designer.cs">
+      <DependentUpon>FormAddNewUsers.cs</DependentUpon>
+    </Compile>
     <Compile Include="Core\AllUsers\ADUtils.cs" />
     <Compile Include="Core\AllUsers\FormMonitorAcadUsers.cs">
       <SubType>Form</SubType>
@@ -114,6 +122,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Core\AddNewUsers\FormAddNewUsers.resx">
+      <DependentUpon>FormAddNewUsers.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Core\AllUsers\FormMonitorAcadUsers.resx">
       <DependentUpon>FormMonitorAcadUsers.cs</DependentUpon>
     </EmbeddedResource>

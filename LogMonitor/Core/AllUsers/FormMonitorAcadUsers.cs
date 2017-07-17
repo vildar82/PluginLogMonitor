@@ -21,7 +21,7 @@ namespace LogMonitor.Core.AllUsers
 
       private void buttonSave_Click(object sender, EventArgs e)
       {
-         SaveFileDialog dialogSaveFile = new SaveFileDialog();
+         var dialogSaveFile = new SaveFileDialog();
          dialogSaveFile.AddExtension = true;
          dialogSaveFile.CheckPathExists = true;
          dialogSaveFile.DefaultExt = "txt";         

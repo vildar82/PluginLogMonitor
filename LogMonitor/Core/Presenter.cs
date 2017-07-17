@@ -18,7 +18,7 @@ namespace LogMonitor.Core
 
       public string GetBody()
       {
-         StringBuilder sbBody = new StringBuilder();
+         var sbBody = new StringBuilder();
          foreach (var pluginLog in _pluginsLog)
          {
             sbBody.AppendLine($"{pluginLog.Value.PluginName}");
@@ -35,7 +35,7 @@ namespace LogMonitor.Core
 
       public DataTable GetDataTable()
       {
-         DataTable table = new DataTable("Отчет лог мониторинга");
+         var table = new DataTable("Отчет лог мониторинга");
 
          var colUserName = table.Columns.Add("Usernane");
          var colLog = table.Columns.Add("Log");
@@ -60,13 +60,13 @@ namespace LogMonitor.Core
 
       public void SaveReport(string body)
       {
-         string date = DateTime.Now.ToString();
-         foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+         var date = DateTime.Now.ToString();
+         foreach (var c in System.IO.Path.GetInvalidFileNameChars())
          {
             date = date.Replace(c, '.');
          }
 
-         string fileName = Path.Combine(LogService.LocalSavePath, string.Format("PluginLogs-{0}.{1}", date, "txt"));
+         var fileName = Path.Combine(LogService.LocalSavePath, $"PluginLogs-{date}.{"txt"}");
 
          try
          {

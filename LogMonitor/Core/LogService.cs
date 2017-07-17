@@ -10,25 +10,23 @@ namespace LogMonitor.Core
 {
     // Следит за логами. собирает логи плагинов. отправляет сводку
     public class LogService
-    {        
-        private static string _localSavePath = @"c:\work\test\Logs";
-        private string _body;
-        private DateTime _lastScan;
-        private string _logPath = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
+    {
+	    private string _logPath = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
         private System.Timers.Timer _timer;
 
         public LogService ()
         {
             FrequencyScanLogHours = 3; // сканировать логи каждые три часа.
-            _lastScan = DateTime.Now.AddDays(-1);
+            LastScan = DateTime.Now.AddDays(-1);
         }
 
-        public static string LocalSavePath { get { return _localSavePath; } }
-        public string Body { get { return _body; } }
-        public int FrequencyScanLogHours { get; set; }
-        public DateTime LastScan { get { return _lastScan; } }
+        public static string LocalSavePath { get; } = @"c:\temp\Logs";
 
-        public void Start ()
+	    public string Body { get; private set; }
+	    public int FrequencyScanLogHours { get; set; }
+        public DateTime LastScan { get; private set; }
+
+	    public void Start ()
         {
             setTimer();
             Timer_Elapsed(null, null);
@@ -43,7 +41,7 @@ namespace LogMonitor.Core
         {
             var dirLog = new DirectoryInfo(_logPath);
             var filesLog = dirLog.GetFiles("*.log");
-            LogAnalizer logAnalizer = new LogAnalizer(_lastScan);
+            var logAnalizer = new LogAnalizer(LastScan);
             foreach (var file in filesLog)
             {
                 var logLines = File.ReadAllLines(file.FullName, Encoding.Default);
@@ -54,14 +52,14 @@ namespace LogMonitor.Core
 
         private void scanLogsAndSendReport ()
         {
-            Dictionary<string, PluginLog> pluginsLog = getPluginsLog();
-            Presenter present = new Presenter(pluginsLog);
-            _body = present.GetBody();
-            if (!string.IsNullOrEmpty(_body))
+            var pluginsLog = getPluginsLog();
+            var present = new Presenter(pluginsLog);
+            Body = present.GetBody();
+            if (!string.IsNullOrEmpty(Body))
             {
-                EmailLog.SendEmail(_body, "Plugin Log Monitor");
+                EmailLog.SendEmail(Body, "Plugin Log Monitor");
             }
-            present.SaveReport(_body);
+            present.SaveReport(Body);
         }
 
         private void setTimer ()
@@ -82,7 +80,7 @@ namespace LogMonitor.Core
             {
                 MessageBox.Show(ex.ToString());
             }
-            _lastScan = DateTime.Now;
+            LastScan = DateTime.Now;
         }
     }
 }

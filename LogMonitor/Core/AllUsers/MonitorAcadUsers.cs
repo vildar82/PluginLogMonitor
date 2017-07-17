@@ -43,7 +43,7 @@ namespace LogMonitor.Core.AllUsers
         private void Parse()
         {
             UsersAD = ADUtils.GetUsersInGroup(GroupAD);
-            DirectoryInfo dirLogInfo = new DirectoryInfo(LogFolder);
+            var dirLogInfo = new DirectoryInfo(LogFolder);
             var logFiles = dirLogInfo.GetFiles("*.log", SearchOption.TopDirectoryOnly).OrderByDescending(f=>f.LastWriteTime);
             // Поиск пользователей в логах
             foreach (var log in logFiles)
@@ -88,7 +88,7 @@ namespace LogMonitor.Core.AllUsers
         {
             foreach (var line in lines)
             {
-                string valueSearch = string.Format("{0} Группа - ", userlog.Login);
+                var valueSearch = $"{userlog.Login} Группа - ";
                 var index = line.IndexOf(valueSearch, StringComparison.OrdinalIgnoreCase);
                 if (index > 0)
                 {
@@ -119,7 +119,7 @@ namespace LogMonitor.Core.AllUsers
 
         private List<UserInfo> checkUserNotLog()
         {
-            List<UserInfo> checkUserNotLog = new List<UserInfo>();
+            var checkUserNotLog = new List<UserInfo>();
             foreach (var userAd in UsersAD)
             {
                 if (!UsersLog.Exists(u => isEqualLogins(u.Login, userAd.Login)))
@@ -157,8 +157,8 @@ namespace LogMonitor.Core.AllUsers
 
         private string getLoginByFileLogNam(string log)
         {
-            string res = Path.GetFileNameWithoutExtension(log);
-            int indexC = res.IndexOf("-C-"); // англ C
+            var res = Path.GetFileNameWithoutExtension(log);
+            var indexC = res.IndexOf("-C-"); // англ C
             if (indexC == -1)
             {
                 indexC = res.IndexOf("-С-"); // рус С
@@ -173,8 +173,8 @@ namespace LogMonitor.Core.AllUsers
         private void getUserInLog(string log)
         {
             // Определение пользователя по имени лог файла
-            string loginByLog = getLoginByFileLogNam(log);
-            UserInfo userlog = UsersLog.Find(u => isEqualLogins(loginByLog, u.Login));
+            var loginByLog = getLoginByFileLogNam(log);
+            var userlog = UsersLog.Find(u => isEqualLogins(loginByLog, u.Login));
             if (userlog == null)
             {
                 userlog = new UserInfo(loginByLog, loginByLog, "");
@@ -211,14 +211,14 @@ namespace LogMonitor.Core.AllUsers
         {
             foreach (var line in lines.Reverse())
             {
-                string searchInput = "Версия автокада -";
+                var searchInput = "Версия автокада -";
                 var index = line.IndexOf(searchInput, StringComparison.OrdinalIgnoreCase);
                 if (index > 0)
                 {
                     var value = line.Substring(index + searchInput.Length).Trim();
                     try
                     {
-                        Version ver = Version.Parse(value);
+                        var ver = Version.Parse(value);
                         if (userlog.AcadVersion == null || userlog.AcadVersion < ver)
                         {
                             userlog.AcadVersion = ver;
@@ -234,14 +234,14 @@ namespace LogMonitor.Core.AllUsers
         {
             foreach (var line in lines.Reverse())
             {
-                string searchInput = "Версия среды .NET Framework -";
+                var searchInput = "Версия среды .NET Framework -";
                 var index = line.IndexOf(searchInput, StringComparison.OrdinalIgnoreCase);
                 if (index > 0)
                 {                    
                     var value = line.Substring(index + searchInput.Length).Trim();
                     try
                     {
-                        Version ver = Version.Parse(value);
+                        var ver = Version.Parse(value);
                         if (userlog.NetVersion == null || userlog.NetVersion < ver)
                         {
                             userlog.NetVersion = ver;

@@ -9,51 +9,58 @@ namespace LogMonitor.Core.AllUsers
 {
     public static class ADUtils
     {
-        const string domainName = "picompany.ru";
-        const string domainDsk2 = "dsk2.picompany.ru";
+	    private const string domainName = "picompany.ru";
+	    private const string domainMain = "main.picompany.ru";
+		private const string domainDsk2 = "dsk2.picompany.ru";
 
         /// <summary>
         /// Получить базовый основной контекст
         /// </summary>        
         public static PrincipalContext GetPrincipalContext (string domain = null)
         {
-            if (domain == null) return new PrincipalContext(ContextType.Domain);
-            return new PrincipalContext(ContextType.Domain, domain);
+	        return domain == null
+		        ? new PrincipalContext(ContextType.Domain)
+		        : new PrincipalContext(ContextType.Domain, domain);
         }
 
-        /// <summary>
-        /// Получить указанного пользователя Active Directory
-        /// </summary>
-        /// <param name="sUserName">Имя пользователя для извлечения</param>        
-        public static UserPrincipal GetUser (string sUserName)
-        {
-            PrincipalContext context = GetPrincipalContext();
-            var res = UserPrincipal.FindByIdentity(context, IdentityType.SamAccountName, sUserName);
-            if (res == null)
-            {
-                context = GetPrincipalContext(domainDsk2);
-                res = UserPrincipal.FindByIdentity(context, IdentityType.SamAccountName, sUserName);
-            }
-            return res;
-        }
+		/// <summary>
+		/// Получить указанного пользователя Active Directory
+		/// </summary>
+		/// <param name="userName">Имя пользователя для извлечения</param>        
+		public static UserPrincipal GetUser (string userName)
+		{
+			var res = GetUser(userName, null);
+			if (res != null) return res;
+			res = GetUser(userName, domainName);
+			if (res != null) return res;
+			res = GetUser(userName, domainDsk2);
+			return res ?? GetUser(userName, domainMain);
+		}
 
-        public static List<UserInfo> GetUsersInGroup (string groupName)
+	    private static UserPrincipal GetUser(string sUserName, string domain)
+	    {
+		    return UserPrincipal.FindByIdentity(GetPrincipalContext(domain), IdentityType.SamAccountName, sUserName);
+	    }
+
+	    public static List<UserInfo> GetUsersInGroup (string groupName)
         {
             //string groupName = "adm-dsk3-AutoCADSettings-u";
-            List<UserInfo> users = new List<UserInfo>();
-            var ctx = GetPrincipalContext(domainName);            
-            GroupPrincipal group = GroupPrincipal.FindByIdentity(ctx, groupName);
-            if (group != null)
-            {
-                HashSet<UserInfo> usersHash = new HashSet<UserInfo>();
-                IterateGroup(group, usersHash);
-                users = usersHash.ToList();
-            }
-            else
-            {
-                MessageBox.Show($"Группа не найдена - {groupName}");
-            }
-            return users;
+            var users = new List<UserInfo>();
+	        using (var ctx = GetPrincipalContext(domainName))
+	        {
+		        var group = GroupPrincipal.FindByIdentity(ctx, groupName);
+		        if (group != null)
+		        {
+			        var usersHash = new HashSet<UserInfo>();
+			        IterateGroup(group, usersHash);
+			        users = usersHash.ToList();
+		        }
+		        else
+		        {
+			        MessageBox.Show($"Группа не найдена - {groupName}");
+		        }
+		        return users;
+	        }
         }
 
         /// <summary>
@@ -62,9 +69,9 @@ namespace LogMonitor.Core.AllUsers
         /// <returns></returns>
         public static List<string> GetEcpWorkGroups ()
         {
-            List<string> res = new List<string> ();
-            DirectoryEntry entry = new DirectoryEntry("LDAP://OU=ECP,OU=Groups,DC=PICompany,DC=ru");
-            DirectorySearcher ds = new DirectorySearcher( entry,"objectClass=group", null, SearchScope.OneLevel);
+            var res = new List<string> ();
+            var entry = new DirectoryEntry("LDAP://OU=ECP,OU=Groups,DC=PICompany,DC=ru");
+            var ds = new DirectorySearcher( entry,"objectClass=group", null, SearchScope.OneLevel);
 
             using (var src = ds.FindAll())
             {                
@@ -85,33 +92,45 @@ namespace LogMonitor.Core.AllUsers
         /// </summary>        
         public static List<string> GetUserGroups (string userName, out string fio)
         {
-            List<string> myItems = new List<string>();
-            UserPrincipal oUserPrincipal = GetUser(userName);
-            fio = oUserPrincipal.DisplayName;
-            using (PrincipalSearchResult<Principal> oPrincipalSearchResult = oUserPrincipal.GetGroups())
-            {
-                foreach (Principal oResult in oPrincipalSearchResult)
-                {
-                    myItems.Add(oResult.Name);
-                }
-            }
-            return myItems;
+	        using (var oUserPrincipal = GetUser(userName))
+	        {
+		        fio = oUserPrincipal.DisplayName;
+		        return oUserPrincipal.GetGroups().Select(s => s.Name).ToList();
+	        }
         }
 
         private static void IterateGroup (GroupPrincipal group, HashSet<UserInfo> usersHash)
         {
-            foreach (Principal p in group.GetMembers())
+            foreach (var p in group.GetMembers())
             {
-                if (p is GroupPrincipal)
+                if (p is GroupPrincipal g)
                 {
-                    IterateGroup((GroupPrincipal)p, usersHash);
+                    IterateGroup(g, usersHash);
                 }
-                else if (p is UserPrincipal)
+                else if (p is UserPrincipal n)
                 {
-                    UserInfo u = new UserInfo(((UserPrincipal)p).DisplayName, ((UserPrincipal)p).SamAccountName, group.Name);
+                    var u = new UserInfo(n.DisplayName, ((UserPrincipal)p).SamAccountName, group.Name);
                     usersHash.Add(u);
                 }
             }
-        }        
+        }
+
+	    public static void AddUserToGroup(string userName, string groupAd)
+	    {
+		    using (var context = GetPrincipalContext(domainName))
+		    {
+			    var user = GetUser(userName);
+			    if (user == null)
+				    throw new Exception($"Пользователь не найден в AD - {userName}");
+			    var group = GroupPrincipal.FindByIdentity(context, IdentityType.Name, groupAd);
+			    if (group == null)
+				    throw new Exception($"Группа не найдена в AD - {groupAd}");
+			    if (!group.Members.Contains(user))
+			    {
+				    group.Members.Add(user);
+					group.Save();
+			    }
+		    }
+	    }
     }
 }

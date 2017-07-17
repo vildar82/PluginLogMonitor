@@ -8,21 +8,21 @@ namespace LogMonitor.Core
    {
       public static void SendEmail(string body, string subject)
       {
-         string to = "vildar82@gmail.com";
-         string from = "KhisyametdinovVT@pik.ru";
+         var to = "vildar82@gmail.com";
+         var from = "KhisyametdinovVT@pik.ru";
 
          try
          {
-            string mailServer = "ex20pik.picompany.ru";
+            var mailServer = "ex20pik.picompany.ru";
 
-            MailMessage mailMessage = new MailMessage(
+            var mailMessage = new MailMessage(
                                                    from,
                                                    to,
                                                    subject,
                                                    body
                                                   );
             //mailMessage.IsBodyHtml = true;
-            SmtpClient client = new SmtpClient(mailServer);
+            var client = new SmtpClient(mailServer);
             //client.UseDefaultCredentials = true;
             client.Send(mailMessage);
          }

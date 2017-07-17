@@ -10,7 +10,7 @@ namespace LogMonitor.Core.AllUsers
     {
         public static string GetReportMessage(MonitorAcadUsers apm)
         {
-            StringBuilder report = new StringBuilder("Отчет по всем пользователям настроек AutoCAD\n");
+            var report = new StringBuilder("Отчет по всем пользователям настроек AutoCAD\n");
 
             report.AppendLine($"\n:Версии .NET Framework:");
             var netVers = apm.UsersLog.GroupBy(u => u.NetVersion).OrderByDescending(g => g.Count());            
@@ -48,12 +48,12 @@ namespace LogMonitor.Core.AllUsers
 
         private static string getReportForUsers(List<UserInfo> users, string title)
         {            
-            StringBuilder res = new StringBuilder();
+            var res = new StringBuilder();
             res.AppendLine();
             res.AppendLine();
             res.AppendLine(title);
             res.AppendLine();            
-            int i = 1;            
+            var i = 1;            
             foreach (var user in users)
             {
                 res.AppendFormat("{0} {1}\n", i++, user.ToString());

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LogMonitor.Core;
+using LogMonitor.Core.AddNewUsers;
 using LogMonitor.Core.AllUsers;
 using Microsoft.Win32;
 
@@ -9,14 +10,14 @@ namespace LogMonitor
 {
     public partial class FormLog : Form
     {
-        private LogService _logService;
+        private readonly LogService _logService;
         private string _reportMonitorAcadUsers = string.Empty;
 
         public FormLog ()
         {
             InitializeComponent();
             _logService = new LogService();
-            StartMonitoring();
+            //StartMonitoring();
             RegisterInStartup(true);
 
             backgroundWorker1.DoWork += BackgroundWorker1_DoWork;
@@ -26,23 +27,23 @@ namespace LogMonitor
 
         private void BackgroundWorker1_RunWorkerCompleted (object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            FormMonitorAcadUsers formAcadUsers = new FormMonitorAcadUsers(_reportMonitorAcadUsers);
+            var formAcadUsers = new FormMonitorAcadUsers(_reportMonitorAcadUsers);
             formAcadUsers.Show();
 
-            Core.NewUser.FormNewUsers frmNewUsers = new Core.NewUser.FormNewUsers ();
+            var frmNewUsers = new Core.NewUser.FormNewUsers ();
             frmNewUsers.Show();
         }
 
         private void BackgroundWorker1_DoWork (object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            MonitorAcadUsers monitorAcadUsers = new MonitorAcadUsers();
+            var monitorAcadUsers = new MonitorAcadUsers();
             monitorAcadUsers.CheckAllUsers();
             _reportMonitorAcadUsers = monitorAcadUsers.Report;
         }
 
         private void ShowFormMonitoringAcadUsers (MonitorAcadUsers monitorAcadUsers)
         {
-            FormMonitorAcadUsers formMonitoracadUsers = new FormMonitorAcadUsers(monitorAcadUsers.Report);
+            var formMonitoracadUsers = new FormMonitorAcadUsers(monitorAcadUsers.Report);
             formMonitoracadUsers.Show();
         }
 
@@ -90,7 +91,7 @@ namespace LogMonitor
 
         private void RegisterInStartup (bool isChecked)
         {
-            RegistryKey registryKey = Registry.CurrentUser.OpenSubKey
+            var registryKey = Registry.CurrentUser.OpenSubKey
                  ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
             if (isChecked)
             {
@@ -101,5 +102,16 @@ namespace LogMonitor
                 registryKey.DeleteValue("PluginLogMonitor");
             }
         }
-    }
+
+		private void bAddNewUsers_Click(object sender, EventArgs e)
+		{
+			var formAddNewUsers = new FormAddNewUsers();
+			formAddNewUsers.Show();
+		}
+
+		private void FormLog_Load(object sender, EventArgs e)
+		{
+
+		}
+	}
 }

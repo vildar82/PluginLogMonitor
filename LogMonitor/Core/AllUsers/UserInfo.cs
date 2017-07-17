@@ -32,7 +32,7 @@ namespace LogMonitor.Core.AllUsers
 
         public override bool Equals(object obj)
         {
-            UserInfo u = obj as UserInfo;
+            var u = obj as UserInfo;
             return u != null && u.Login == Login;
         }
 
@@ -43,8 +43,8 @@ namespace LogMonitor.Core.AllUsers
 
         public override string ToString()
         {
-            return string.Format("Имя: {0}; Логин: {1}; ГруппаAD: {2}; ГруппаAcad: {3}; LastSuccesSetting: {4}; LastError {5}"
-               , Name, Login, GroupAD, GroupAcad, LastSuccesSetting, LastError);
+            return
+	            $"Имя: {Name}; Логин: {Login}; ГруппаAD: {GroupAD}; ГруппаAcad: {GroupAcad}; LastSuccesSetting: {LastSuccesSetting}; LastError {LastError}";
         }        
     }
 }
