@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LogMonitor.Core;
 using LogMonitor.Core.AddNewUsers;
 using LogMonitor.Core.AllUsers;
+using LogMonitor.Core.NewUser;
 using Microsoft.Win32;
 
 namespace LogMonitor
@@ -17,7 +19,7 @@ namespace LogMonitor
         {
             InitializeComponent();
             _logService = new LogService();
-            //StartMonitoring();
+            StartMonitoring();
             RegisterInStartup(true);
 
             backgroundWorker1.DoWork += BackgroundWorker1_DoWork;
@@ -32,7 +34,14 @@ namespace LogMonitor
 
             var frmNewUsers = new Core.NewUser.FormNewUsers ();
             frmNewUsers.Show();
-        }
+
+	        // Новые ползователи
+	        if (NewUserService.addNewUsers?.Any() == true)
+	        {
+		        var formAddNewUsers = new FormAddNewUsers(NewUserService.addNewUsers);
+		        formAddNewUsers.Show();
+	        }
+		}
 
         private void BackgroundWorker1_DoWork (object sender, System.ComponentModel.DoWorkEventArgs e)
         {
@@ -110,6 +119,11 @@ namespace LogMonitor
 		}
 
 		private void FormLog_Load(object sender, EventArgs e)
+		{
+
+		}
+
+		private void richTextBox1_TextChanged(object sender, EventArgs e)
 		{
 
 		}

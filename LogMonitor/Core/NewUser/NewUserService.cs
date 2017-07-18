@@ -19,7 +19,6 @@ namespace LogMonitor.Core.NewUser
 	    public static void RegNewUser(string userLogin, string userGroup)
 	    {
 		    var user = new NewUserInfo(userLogin) { WorkGroup = userGroup};
-
 			// Проверка групп пользователя
 		    var userGroupsAD = ADUtils.GetUserGroups(user.UserName, out string fio);
 		    user.FIO = fio;
@@ -29,7 +28,6 @@ namespace LogMonitor.Core.NewUser
 			    // добавить пользователя в группу AD
 			    ADUtils.AddUserToGroup(user.UserName, userGroupAD);
 		    }
-
 			// Проверка есть ли запись этого юзера в списке UserList2.xlsx
 			if (!IsUserExistInExcelUserList(user.UserName))
 		    {

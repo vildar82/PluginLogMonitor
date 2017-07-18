@@ -61,13 +61,6 @@ namespace LogMonitor.Core.AllUsers
             UsersErorNotInLog.Sort();
             UsersErorLongSuccess.Sort();
             UsersLog.Sort();
-
-			// Новые ползователи
-	        if (NewUserService.addNewUsers?.Any() == true)
-	        {
-		        var formAddNewUsers = new FormAddNewUsers(NewUserService.addNewUsers);
-				formAddNewUsers.Show();
-	        }
         }
 
         private void SendReport()
