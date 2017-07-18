@@ -29,9 +29,9 @@
 		private void InitializeComponent()
 		{
 			this.dgUsers = new System.Windows.Forms.DataGridView();
-			this.Login = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.Group = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.buttonOK = new System.Windows.Forms.Button();
+			this.Login = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.Group = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			((System.ComponentModel.ISupportInitialize)(this.dgUsers)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -49,16 +49,6 @@
 			this.dgUsers.Size = new System.Drawing.Size(459, 292);
 			this.dgUsers.TabIndex = 0;
 			// 
-			// Login
-			// 
-			this.Login.HeaderText = "Login";
-			this.Login.Name = "Login";
-			// 
-			// Group
-			// 
-			this.Group.HeaderText = "Group";
-			this.Group.Name = "Group";
-			// 
 			// buttonOK
 			// 
 			this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -69,6 +59,34 @@
 			this.buttonOK.Text = "OK";
 			this.buttonOK.UseVisualStyleBackColor = true;
 			this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
+			// 
+			// Login
+			// 
+			this.Login.HeaderText = "Login";
+			this.Login.Name = "Login";
+			// 
+			// Group
+			// 
+			this.Group.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
+			this.Group.HeaderText = "Group";
+			this.Group.Items.AddRange(new object[] {
+            "АР",
+            "ВК",
+            "ГП",
+            "ГТО",
+            "ДО",
+            "ЖБК-ТО",
+            "КР-МН",
+            "КР-СБ",
+            "КР-СБ-ГК",
+            "НС",
+            "ОВ",
+            "СС",
+            "ТО",
+            "ЭО"});
+			this.Group.Name = "Group";
+			this.Group.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+			this.Group.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
 			// 
 			// FormAddNewUsers
 			// 
@@ -88,8 +106,8 @@
 		#endregion
 
 		private System.Windows.Forms.DataGridView dgUsers;
-		private System.Windows.Forms.DataGridViewTextBoxColumn Login;
-		private System.Windows.Forms.DataGridViewTextBoxColumn Group;
 		private System.Windows.Forms.Button buttonOK;
+		private System.Windows.Forms.DataGridViewTextBoxColumn Login;
+		private System.Windows.Forms.DataGridViewComboBoxColumn Group;
 	}
 }

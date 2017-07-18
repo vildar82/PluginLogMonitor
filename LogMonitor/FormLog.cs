@@ -17,7 +17,7 @@ namespace LogMonitor
         {
             InitializeComponent();
             _logService = new LogService();
-            StartMonitoring();
+            //StartMonitoring();
             RegisterInStartup(true);
 
             backgroundWorker1.DoWork += BackgroundWorker1_DoWork;
