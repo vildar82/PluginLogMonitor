@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Timers;
 using System.Windows.Forms;
@@ -11,7 +12,7 @@ namespace LogMonitor.Core
     // Следит за логами. собирает логи плагинов. отправляет сводку
     public class LogService
     {
-	    private string _logPath = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
+	    private const string _logPath = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
         private System.Timers.Timer _timer;
 
         public LogService ()
@@ -84,5 +85,12 @@ namespace LogMonitor.Core
             }
             LastScan = DateTime.Now;
         }
+
+	    public static string GetUserLogs(string user)
+	    {
+		    var userLogFiles = new DirectoryInfo(_logPath).EnumerateFiles($"{user}*", SearchOption.TopDirectoryOnly)
+			    .OrderBy(o => o.LastWriteTime).Select(s => File.ReadAllText(s.FullName, Encoding.Default));
+		    return string.Join(Environment.NewLine, userLogFiles);
+	    }
     }
 }

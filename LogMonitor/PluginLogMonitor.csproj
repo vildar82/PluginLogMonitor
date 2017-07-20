@@ -90,6 +90,12 @@
     <Compile Include="Core\AllUsers\MonitorAcadUsers.cs" />
     <Compile Include="Core\AllUsers\ReportAllUsers.cs" />
     <Compile Include="Core\AllUsers\UserInfo.cs" />
+    <Compile Include="Core\CheckUser\FormCheckUser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Core\CheckUser\FormCheckUser.Designer.cs">
+      <DependentUpon>FormCheckUser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Core\EmailLog.cs" />
     <Compile Include="Core\LogAnalizer.cs" />
     <Compile Include="Core\LogEntry.cs" />
@@ -127,6 +133,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Core\AllUsers\FormMonitorAcadUsers.resx">
       <DependentUpon>FormMonitorAcadUsers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Core\CheckUser\FormCheckUser.resx">
+      <DependentUpon>FormCheckUser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Core\NewUser\FormNewUsers.resx">
       <DependentUpon>FormNewUsers.cs</DependentUpon>

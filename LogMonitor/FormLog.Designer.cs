@@ -37,6 +37,7 @@
 			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			this.bAddNewUsers = new System.Windows.Forms.Button();
+			this.buttonCheckUser = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// buttonStart
@@ -103,11 +104,23 @@
 			this.bAddNewUsers.UseVisualStyleBackColor = true;
 			this.bAddNewUsers.Click += new System.EventHandler(this.bAddNewUsers_Click);
 			// 
+			// buttonCheckUser
+			// 
+			this.buttonCheckUser.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.buttonCheckUser.Location = new System.Drawing.Point(950, 46);
+			this.buttonCheckUser.Name = "buttonCheckUser";
+			this.buttonCheckUser.Size = new System.Drawing.Size(154, 62);
+			this.buttonCheckUser.TabIndex = 5;
+			this.buttonCheckUser.Text = "Проверить пользователя";
+			this.buttonCheckUser.UseVisualStyleBackColor = true;
+			this.buttonCheckUser.Click += new System.EventHandler(this.buttonCheckUser_Click);
+			// 
 			// FormLog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1276, 578);
+			this.Controls.Add(this.buttonCheckUser);
 			this.Controls.Add(this.bAddNewUsers);
 			this.Controls.Add(this.richTextBox1);
 			this.Controls.Add(this.label1);
@@ -132,5 +145,6 @@
       private System.Windows.Forms.RichTextBox richTextBox1;
       private System.ComponentModel.BackgroundWorker backgroundWorker1;
 		private System.Windows.Forms.Button bAddNewUsers;
+		private System.Windows.Forms.Button buttonCheckUser;
 	}
 }

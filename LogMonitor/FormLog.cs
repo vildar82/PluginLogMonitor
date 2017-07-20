@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using LogMonitor.Core;
 using LogMonitor.Core.AddNewUsers;
 using LogMonitor.Core.AllUsers;
+using LogMonitor.Core.CheckUser;
 using LogMonitor.Core.NewUser;
 using Microsoft.Win32;
 
@@ -19,15 +20,15 @@ namespace LogMonitor
         {
             InitializeComponent();
             _logService = new LogService();
-            StartMonitoring();
             RegisterInStartup(true);
-
-            backgroundWorker1.DoWork += BackgroundWorker1_DoWork;
-            backgroundWorker1.RunWorkerCompleted += BackgroundWorker1_RunWorkerCompleted;
-            backgroundWorker1.RunWorkerAsync();
         }
 
-        private void BackgroundWorker1_RunWorkerCompleted (object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+	    private void FormLog_Load(object sender, EventArgs e)
+	    {
+		    StartMonitoring();
+		}
+
+		private void BackgroundWorker1_RunWorkerCompleted (object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             var formAcadUsers = new FormMonitorAcadUsers(_reportMonitorAcadUsers);
             formAcadUsers.Show();
@@ -59,13 +60,24 @@ namespace LogMonitor
         private void buttonStart_Click (object sender, EventArgs e)
         {
             StartMonitoring();
-        }
+		}
 
-        private void StartMonitoring ()
+        private async void StartMonitoring ()
         {
-            _logService.Start();
-            UpdateState();
-        }
+	        await ScanLogs();
+			backgroundWorker1.DoWork += BackgroundWorker1_DoWork;
+	        backgroundWorker1.RunWorkerCompleted += BackgroundWorker1_RunWorkerCompleted;
+	        backgroundWorker1.RunWorkerAsync();
+	        UpdateState();
+		}
+
+	    private Task ScanLogs()
+	    {
+			return Task.Run(() =>
+			{
+				_logService.Start();
+			});
+		}
 
         private void buttonStop_Click (object sender, EventArgs e)
         {
@@ -118,14 +130,15 @@ namespace LogMonitor
 			formAddNewUsers.Show();
 		}
 
-		private void FormLog_Load(object sender, EventArgs e)
+		private void richTextBox1_TextChanged(object sender, EventArgs e)
 		{
 
 		}
 
-		private void richTextBox1_TextChanged(object sender, EventArgs e)
+		private void buttonCheckUser_Click(object sender, EventArgs e)
 		{
-
+			var formCheckUser = new FormCheckUser();
+			formCheckUser.Show();
 		}
 	}
 }

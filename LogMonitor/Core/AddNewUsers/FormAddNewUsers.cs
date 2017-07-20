@@ -49,6 +49,7 @@ namespace LogMonitor.Core.AddNewUsers
 					MessageBox.Show($"Ошибка регистрации пользователя {user} - {ex}");
 				}
 			}
+			Close();
 		}
 
 		private void FormAddNewUsers_Load(object sender, EventArgs e)

@@ -29,7 +29,7 @@ namespace LogMonitor.Core.NewUser
 			    ADUtils.AddUserToGroup(user.UserName, userGroupAD);
 		    }
 			// Проверка есть ли запись этого юзера в списке UserList2.xlsx
-			if (!IsUserExistInExcelUserList(user.UserName))
+			if (!IsUserExistInExcelUserList(user.UserName, out string group))
 		    {
 			    RegisterNewUserInExcelUserList(user);
 			}
@@ -62,7 +62,7 @@ namespace LogMonitor.Core.NewUser
 		    var user = new NewUserInfo(userName);
 
 		    // Проверка есть ли запись этого юзера в списке UserList2.xlsx
-		    if (IsUserExistInExcelUserList(user.UserName)) return true;
+		    if (IsUserExistInExcelUserList(user.UserName, out string group)) return true;
 
 		    // Определение рабочей группы пользователя
 		    if (DefineUserGroup(user))
@@ -105,8 +105,9 @@ namespace LogMonitor.Core.NewUser
             return res;
         }
 
-        private static bool IsUserExistInExcelUserList (string user)
+        public static bool IsUserExistInExcelUserList (string user, out string group)
         {
+	        group = string.Empty;
 			using (var pck = new OfficeOpenXml.ExcelPackage())
             {
                 using (var stream = File.OpenRead(Program.FileExcelUserList))
@@ -119,6 +120,7 @@ namespace LogMonitor.Core.NewUser
                 {
                     if (worksheet.Cells[numberRow, 2].Text.Trim().Equals(user, StringComparison.OrdinalIgnoreCase))
                     {
+	                    group = worksheet.Cells[numberRow, 3].Text;
                         return true;
                     }
                     numberRow++;
@@ -184,7 +186,7 @@ namespace LogMonitor.Core.NewUser
             return null;
         }
 
-	    private static string GetGroupADName(string workGroup)
+	    public static string GetGroupADName(string workGroup)
 	    {
 			switch (workGroup)
 			{
