@@ -12,7 +12,7 @@ namespace LogMonitor.Core
     // Следит за логами. собирает логи плагинов. отправляет сводку
     public class LogService
     {
-	    private const string _logPath = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
+	    public const string _logPath = @"\\picompany.ru\pikp\lib\_CadSettings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
         private System.Timers.Timer _timer;
 
         public LogService ()
