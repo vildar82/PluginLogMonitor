@@ -171,7 +171,7 @@ namespace LogMonitor.Core.NewUser
 
         private static string GetWorkGroupName (string group)
         {
-            if (group.Contains("_GP") || group.Contains("_KG")) return "ГП";
+            if (group.Contains("_GP") || group.Contains("_KG")) return "ГП_Тест";
             if (group.Contains("_AR")) return "АР";
             if (group.Contains("_AK")) return "СС";
             if (group.Contains("_EO")) return "ЭО";
@@ -191,6 +191,7 @@ namespace LogMonitor.Core.NewUser
 			switch (workGroup)
 			{
 				case "ГП": return "fld-ECP_AR_GP-u";
+				case "ГП_Тест": return "fld-ECP_AR_GP-u";
 				case "АР": return "fld-ECP_AR_NR-u";
 				case "СС": return "fld-ECP_INZH_SS-u";
 				case "ЭО": return "fld-ECP_INZH_EO-u";
