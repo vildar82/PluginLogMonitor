@@ -7,8 +7,8 @@
          UserName = getUsernameFromLogFileName(filename);
       }
 
-      public string Logs { get; set; }
-      public string UserName { get; }
+      public string Logs { get; set; } = "";
+      public string UserName { get; } = "";
 
       private string getUsernameFromLogFileName(string filename)
       {

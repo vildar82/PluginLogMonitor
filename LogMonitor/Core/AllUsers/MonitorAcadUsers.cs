@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 using LogMonitor.Core.AddNewUsers;
 using LogMonitor.Core.NewUser;
 
@@ -48,10 +50,12 @@ namespace LogMonitor.Core.AllUsers
             var dirLogInfo = new DirectoryInfo(LogFolder);
             var logFiles = dirLogInfo.GetFiles("*.log", SearchOption.TopDirectoryOnly).OrderByDescending(f=>f.LastWriteTime);
             // Поиск пользователей в логах
-            foreach (var log in logFiles)
-            {   
-                GetUserInLog(log.FullName);
-            }
+
+            Parallel.ForEach(logFiles, l => GetUserInLog(l.FullName));
+            //foreach (var log in logFiles)
+            //{   
+            //    GetUserInLog(log.FullName);
+            //}
             // Проверка пользователей
             CheckUsersInLog();
 
@@ -70,7 +74,7 @@ namespace LogMonitor.Core.AllUsers
             EmailLog.SendEmail(Report, "Log Monitor All Users AutoCAD Settings");
         }
 
-        private static void FindLastError(UserInfo userlog, IEnumerable<string> lines)
+        private static void FindLastError(UserInfo userlog, [NotNull] IEnumerable<string> lines)
         {
             foreach (var line in lines)
             {
@@ -86,7 +90,7 @@ namespace LogMonitor.Core.AllUsers
             }
         }
 
-        private static void FindUserGroupAcad(UserInfo userlog, IEnumerable<string> lines)
+        private static void FindUserGroupAcad(UserInfo userlog, [NotNull] IEnumerable<string> lines)
         {
             foreach (var line in lines)
             {
@@ -99,7 +103,7 @@ namespace LogMonitor.Core.AllUsers
             }
         }
 
-        private void FindLastSuccessSetting(UserInfo userlog, IEnumerable<string> lines)
+        private void FindLastSuccessSetting(UserInfo userlog, [NotNull] IEnumerable<string> lines)
         {
             foreach (var line in lines)
             {
@@ -119,6 +123,7 @@ namespace LogMonitor.Core.AllUsers
             }
         }
 
+        [NotNull]
         private List<UserInfo> CheckUserNotLog()
         {
             var checkUserNotLog = new List<UserInfo>();
@@ -157,6 +162,7 @@ namespace LogMonitor.Core.AllUsers
             //UsersErorLongSuccess.ForEach(e => UsersLog.Remove(e));
         }
 
+        [NotNull]
         private static string GetLoginByFileLogNam(string log)
         {
             var res = Path.GetFileNameWithoutExtension(log);
@@ -209,7 +215,7 @@ namespace LogMonitor.Core.AllUsers
             }            
         }
 
-        private static void FindAcadVer (UserInfo userlog, IEnumerable<string> lines)
+        private static void FindAcadVer (UserInfo userlog, [NotNull] IEnumerable<string> lines)
         {
             foreach (var line in lines.Reverse())
             {
@@ -232,7 +238,7 @@ namespace LogMonitor.Core.AllUsers
             }
         }
 
-        private static void FindNetVersion(UserInfo userlog, IEnumerable<string> lines)
+        private static void FindNetVersion(UserInfo userlog, [NotNull] IEnumerable<string> lines)
         {
             foreach (var line in lines.Reverse())
             {
@@ -255,7 +261,7 @@ namespace LogMonitor.Core.AllUsers
             }
         }
 
-        private static bool IsEqualLogins(string loginByLog, string login)
+        private static bool IsEqualLogins([NotNull] string loginByLog, [NotNull] string login)
         {
             return loginByLog.IndexOf(login, StringComparison.OrdinalIgnoreCase) >= 0;
         }

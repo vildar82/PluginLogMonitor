@@ -27,7 +27,7 @@ namespace LogMonitor.Core.CheckUser
 				if (string.IsNullOrEmpty(user)) throw new ArgumentException("Введи логин пользователя.");
 
 				// Наличие в UserList
-				if (NewUserService.IsUserExistInExcelUserList(user, out string group))
+				if (NewUserService.IsUserExistInExcelUserList(user, out var group))
 				{
 					textBoxExistInUserList.Text = "Есть";
 					textBoxUserListGroup.Text = group;
@@ -41,7 +41,7 @@ namespace LogMonitor.Core.CheckUser
 				}
 
 				// Проверка AD
-				var groupsAD = ADUtils.GetUserGroups(user, out string fio);
+				var groupsAD = ADUtils.GetUserGroups(user, out var fio);
 				textBoxFIO.Text = fio;
 				listBoxADGroups.DataSource = groupsAD;
 				if (!string.IsNullOrEmpty(textBoxUserListGroupAD.Text))

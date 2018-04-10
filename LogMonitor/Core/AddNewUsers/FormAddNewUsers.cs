@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using LogMonitor.Core.NewUser;
 
 namespace LogMonitor.Core.AddNewUsers
@@ -18,7 +19,7 @@ namespace LogMonitor.Core.AddNewUsers
 			
 		}
 
-		public FormAddNewUsers(List<string> newUsers)
+		public FormAddNewUsers([CanBeNull] List<string> newUsers)
 		{
 			InitializeComponent();
 			if (newUsers?.Any() == true)

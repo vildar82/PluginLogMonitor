@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace LogMonitor.Core
 {
@@ -9,7 +12,6 @@ namespace LogMonitor.Core
         private readonly DateTime _lastScan;
         private LogEntry _logEntry;
         private PluginLog _pluginLog;
-        private readonly Dictionary<string, PluginLog> _pluginsLog = new Dictionary<string, PluginLog>();
         private string _username;
 
         public LogAnalizer (DateTime lastScan)
@@ -17,9 +19,9 @@ namespace LogMonitor.Core
             _lastScan = lastScan;
         }
 
-        public Dictionary<string, PluginLog> PluginsLog => _pluginsLog;
+        public static ConcurrentDictionary<string, PluginLog> PluginsLog { get; } = new ConcurrentDictionary<string, PluginLog>();
 
-	    public void AnalisLogLines (IEnumerable<string> logLines, string filename)
+        public void AnalisLogLines ([NotNull] IEnumerable<string> logLines, string filename)
         {
             _pluginLog = null;
             _lastLogIsPlugin = false;
@@ -31,7 +33,7 @@ namespace LogMonitor.Core
             }
         }
 
-        private void ParsingLine (string line)
+        private void ParsingLine ([NotNull] string line)
         {
             if (LineIsLog(line))
             {
@@ -52,15 +54,15 @@ namespace LogMonitor.Core
                         {
                             pluginName = msgLine;
                         }
-                        if (!_pluginsLog.TryGetValue(pluginName, out _pluginLog))
+                        if (!PluginsLog.TryGetValue(pluginName, out _pluginLog))
                         {
                             _pluginLog = new PluginLog(pluginName);
-                            _pluginsLog.Add(_pluginLog.PluginName, _pluginLog);
+                            PluginsLog.TryAdd(_pluginLog.PluginName, _pluginLog);
                         }
                         if (!_pluginLog.Logs.TryGetValue(_username, out _logEntry))
                         {
                             _logEntry = new LogEntry(_username);
-                            _pluginLog.Logs.Add(_username, _logEntry);
+                            _pluginLog.Logs.TryAdd(_username, _logEntry);
                         }
                         _logEntry.Logs += $"\n{line}";
                         _lastLogIsPlugin = true;
@@ -82,7 +84,7 @@ namespace LogMonitor.Core
             }
         }
 
-        private static bool LineIsLog (string line)
+        private static bool LineIsLog ([NotNull] string line)
         {
 	        if (line.Length <= 25) return false;
 	        var startDateTimeLine = line.Substring(0, 24);
@@ -93,10 +95,13 @@ namespace LogMonitor.Core
 	        return false;
         }
 
-        private bool CheckLogDate (string line)
+        private bool CheckLogDate ([NotNull] string line)
         {
-			var dateText = line.Substring(0, line.IndexOf('_'));
-			if (DateTime.TryParse(dateText, out DateTime logTime))
+            var dateIndex = line.IndexOf('_');
+            if (dateIndex == -1) dateIndex = line.IndexOf('|');
+            if (dateIndex ==-1) throw new InvalidOperationException();
+            var dateText = line.Substring(0, dateIndex);
+			if (DateTime.TryParse(dateText, out var logTime))
             {
                 if (logTime > _lastScan)
                 {
@@ -106,7 +111,8 @@ namespace LogMonitor.Core
             return false;
         }
 
-        private static string GetLineMsg (string line)
+        [NotNull]
+        private static string GetLineMsg ([NotNull] string line)
         {
             // из строки вида:
             // 2015-09-17 21:28:31.5454_Info:  Версия автокада - 20.1.0.0

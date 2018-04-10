@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace LogMonitor.Core
 {
@@ -8,10 +9,10 @@ namespace LogMonitor.Core
       public PluginLog(string name)
       {
          PluginName = name;
-         Logs = new Dictionary<string, LogEntry>();
+         Logs = new ConcurrentDictionary<string, LogEntry>();
       }
 
-      public Dictionary<string, LogEntry> Logs { get; set; }
+      public ConcurrentDictionary<string, LogEntry> Logs { get; set; }
       public string PluginName { get; set; }
    }
 }

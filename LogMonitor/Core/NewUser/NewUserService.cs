@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using LogMonitor.Core.AllUsers;
 
 namespace LogMonitor.Core.NewUser
@@ -12,7 +13,8 @@ namespace LogMonitor.Core.NewUser
     {
         private static readonly List<string> _checkedUsers = new List<string> ();
         private static readonly List<string> _ecpWorkGroups =ADUtils.GetEcpWorkGroups();
-        public static List<NewUserInfo> NewUsers { get; } = new List<NewUserInfo>();
+	    private static object lockExcelUserList = new object();
+	    public static List<NewUserInfo> NewUsers { get; } = new List<NewUserInfo>();
 	    public static List<string> addNewUsers { get; } = new List<string>();
 		public static List<string> Errors { get; } = new List<string>();
 
@@ -20,7 +22,7 @@ namespace LogMonitor.Core.NewUser
 	    {
 		    var user = new NewUserInfo(userLogin) { WorkGroup = userGroup};
 			// Проверка групп пользователя
-		    var userGroupsAD = ADUtils.GetUserGroups(user.UserName, out string fio);
+		    var userGroupsAD = ADUtils.GetUserGroups(user.UserName, out var fio);
 		    user.FIO = fio;
 		    var userGroupAD = GetGroupADName(userGroup);
 		    if (!userGroupsAD.Any(g => g.Equals(userGroupAD, StringComparison.OrdinalIgnoreCase)))
@@ -29,17 +31,18 @@ namespace LogMonitor.Core.NewUser
 			    ADUtils.AddUserToGroup(user.UserName, userGroupAD);
 		    }
 			// Проверка есть ли запись этого юзера в списке UserList2.xlsx
-			if (!IsUserExistInExcelUserList(user.UserName, out string group))
+			if (!IsUserExistInExcelUserList(user.UserName, out var group))
 		    {
 			    RegisterNewUserInExcelUserList(user);
 			}
 		}
 
-		/// <summary>
-		/// Проверка нового пользователя
-		/// </summary>
-		/// <param name="msgLine">Строка лога</param>
-		public static void CheckNewUserInMsgLine (string msgLine, string userName)
+	    /// <summary>
+	    /// Проверка нового пользователя
+	    /// </summary>
+	    /// <param name="msgLine">Строка лога</param>
+	    /// <param name="userName"></param>
+	    public static void CheckNewUserInMsgLine (string msgLine, string userName)
         {
             try
             {
@@ -62,7 +65,7 @@ namespace LogMonitor.Core.NewUser
 		    var user = new NewUserInfo(userName);
 
 		    // Проверка есть ли запись этого юзера в списке UserList2.xlsx
-		    if (IsUserExistInExcelUserList(user.UserName, out string group)) return true;
+		    if (IsUserExistInExcelUserList(user.UserName, out var _)) return true;
 
 		    // Определение рабочей группы пользователя
 		    if (DefineUserGroup(user))
@@ -85,15 +88,11 @@ namespace LogMonitor.Core.NewUser
         /// </summary>
         /// <param name="msgLine">Строка лога</param>
         /// <returns>Да/нет - это строка лога про нового пользователя</returns>
-        private static bool IsNewUserLogLine (string msgLine)
-        {
-            if (msgLine.StartsWith("Не определена группа") ||
-                msgLine.StartsWith("Не определена рабочая группа"))
-            {
-                return true;
-            }
-            return false;
-        }
+        private static bool IsNewUserLogLine ([NotNull] string msgLine)
+	    {
+		    return msgLine.StartsWith("Не определена группа") ||
+		           msgLine.StartsWith("Не определена рабочая группа");
+	    }
 
         /// <summary>
         /// Проверялся ли этот пользователь уже.        
@@ -108,53 +107,59 @@ namespace LogMonitor.Core.NewUser
         public static bool IsUserExistInExcelUserList (string user, out string group)
         {
 	        group = string.Empty;
-			using (var pck = new OfficeOpenXml.ExcelPackage())
-            {
-                using (var stream = File.OpenRead(Program.FileExcelUserList))
-                {
-                    pck.Load(stream);
-                }
-                var worksheet = pck.Workbook.Worksheets[1];
-                var numberRow = 2;
-                while (worksheet.Cells[numberRow, 2].Text.Trim() != "")
-                {
-                    if (worksheet.Cells[numberRow, 2].Text.Trim().Equals(user, StringComparison.OrdinalIgnoreCase))
-                    {
-	                    group = worksheet.Cells[numberRow, 3].Text;
-                        return true;
-                    }
-                    numberRow++;
-                }
-            }
-            return false;
+	        lock (lockExcelUserList)
+	        {
+		        using (var pck = new OfficeOpenXml.ExcelPackage())
+		        {
+			        using (var stream = File.OpenRead(Program.FileExcelUserList))
+			        {
+				        pck.Load(stream);
+			        }
+			        var worksheet = pck.Workbook.Worksheets[1];
+			        var numberRow = 2;
+			        while (worksheet.Cells[numberRow, 2].Text.Trim() != "")
+			        {
+				        if (worksheet.Cells[numberRow, 2].Text.Trim().Equals(user, StringComparison.OrdinalIgnoreCase))
+				        {
+					        group = worksheet.Cells[numberRow, 3].Text;
+					        return true;
+				        }
+				        numberRow++;
+			        }
+		        }
+	        }
+	        return false;
         }
 
-        private static void RegisterNewUserInExcelUserList (NewUserInfo user)
+        private static void RegisterNewUserInExcelUserList ([NotNull] NewUserInfo user)
         {
-			using (var pck = new OfficeOpenXml.ExcelPackage(new FileInfo(Program.FileExcelUserList)))
-            {   
-                var worksheet = pck.Workbook.Worksheets[1];
-                var numberRow = 2;
-                while (worksheet.Cells[numberRow, 2].Text.Trim() != "")
-                {                    
-                    numberRow++;
-                }
-                worksheet.Cells[numberRow, 1].Value = user.FIO;
-                worksheet.Cells[numberRow, 2].Value = user.UserName;
-                worksheet.Cells[numberRow, 3].Value = user.WorkGroup;
-                pck.Save();
-            }
+	        lock (lockExcelUserList)
+	        {
+		        using (var pck = new OfficeOpenXml.ExcelPackage(new FileInfo(Program.FileExcelUserList)))
+		        {
+			        var worksheet = pck.Workbook.Worksheets[1];
+			        var numberRow = 2;
+			        while (worksheet.Cells[numberRow, 2].Text.Trim() != "")
+			        {
+				        numberRow++;
+			        }
+			        worksheet.Cells[numberRow, 1].Value = user.FIO;
+			        worksheet.Cells[numberRow, 2].Value = user.UserName;
+			        worksheet.Cells[numberRow, 3].Value = user.WorkGroup;
+			        pck.Save();
+		        }
+	        }
         }
 
         /// <summary>
         /// Определение рабочей группы пользователя
         /// </summary>
         /// <returns></returns>
-        private static bool DefineUserGroup (NewUserInfo user)
+        private static bool DefineUserGroup ([NotNull] NewUserInfo user)
         {
-			var userGroups = ADUtils.GetUserGroups(user.UserName, out string fio);
+			var userGroups = ADUtils.GetUserGroups(user.UserName, out var fio);
 			user.FIO = fio;
-            var userWorkGroups = _ecpWorkGroups.Intersect(userGroups);
+            var userWorkGroups = _ecpWorkGroups.Intersect(userGroups).ToList();
             user.WorkGroups = userWorkGroups;
             foreach (var item in userWorkGroups)
             {
@@ -169,7 +174,8 @@ namespace LogMonitor.Core.NewUser
             return false;
         }
 
-        private static string GetWorkGroupName (string group)
+        [CanBeNull]
+        private static string GetWorkGroupName ([NotNull] string group)
         {
             if (group.Contains("_GP") || group.Contains("_KG")) return "ГП_Тест";
             if (group.Contains("_AR")) return "АР";
@@ -186,6 +192,7 @@ namespace LogMonitor.Core.NewUser
             return null;
         }
 
+	    [CanBeNull]
 	    public static string GetGroupADName(string workGroup)
 	    {
 			switch (workGroup)

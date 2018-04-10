@@ -4,6 +4,7 @@ using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace LogMonitor.Core.AllUsers
 {
@@ -16,7 +17,8 @@ namespace LogMonitor.Core.AllUsers
         /// <summary>
         /// Получить базовый основной контекст
         /// </summary>        
-        public static PrincipalContext GetPrincipalContext (string domain = null)
+        [NotNull]
+        public static PrincipalContext GetPrincipalContext ([CanBeNull] string domain = null)
         {
 	        return domain == null
 		        ? new PrincipalContext(ContextType.Domain)
@@ -27,6 +29,7 @@ namespace LogMonitor.Core.AllUsers
 		/// Получить указанного пользователя Active Directory
 		/// </summary>
 		/// <param name="userName">Имя пользователя для извлечения</param>        
+		[CanBeNull]
 		public static UserPrincipal GetUser (string userName)
 		{
 			var res = GetUser(userName, null);
@@ -37,12 +40,14 @@ namespace LogMonitor.Core.AllUsers
 			return res ?? GetUser(userName, domainMain);
 		}
 
-	    private static UserPrincipal GetUser(string sUserName, string domain)
+	    [CanBeNull]
+	    private static UserPrincipal GetUser([NotNull] string sUserName, string domain)
 	    {
 		    return UserPrincipal.FindByIdentity(GetPrincipalContext(domain), IdentityType.SamAccountName, sUserName);
 	    }
 
-	    public static List<UserInfo> GetUsersInGroup (string groupName)
+	    [NotNull]
+	    public static List<UserInfo> GetUsersInGroup ([NotNull] string groupName)
         {
             //string groupName = "adm-dsk3-AutoCADSettings-u";
             var users = new List<UserInfo>();
@@ -67,6 +72,7 @@ namespace LogMonitor.Core.AllUsers
         /// Список рабочих групп ЕЦП (по специальностям) - fld-dsk3-ECP_AR_KD-u и т.п.
         /// </summary>
         /// <returns></returns>
+        [NotNull]
         public static List<string> GetEcpWorkGroups ()
         {
             var res = new List<string> ();
@@ -90,6 +96,7 @@ namespace LogMonitor.Core.AllUsers
         /// <summary>
         /// Список групп пользователя
         /// </summary>        
+        [NotNull]
         public static List<string> GetUserGroups (string userName, out string fio)
         {
 	        using (var oUserPrincipal = GetUser(userName))
@@ -99,7 +106,7 @@ namespace LogMonitor.Core.AllUsers
 	        }
         }
 
-        private static void IterateGroup (GroupPrincipal group, HashSet<UserInfo> usersHash)
+        private static void IterateGroup ([NotNull] GroupPrincipal group, HashSet<UserInfo> usersHash)
         {
             foreach (var p in group.GetMembers())
             {
@@ -115,7 +122,7 @@ namespace LogMonitor.Core.AllUsers
             }
         }
 
-	    public static void AddUserToGroup(string userName, string groupAd)
+	    public static void AddUserToGroup(string userName, [NotNull] string groupAd)
 	    {
 		    using (var context = GetPrincipalContext(domainName))
 		    {

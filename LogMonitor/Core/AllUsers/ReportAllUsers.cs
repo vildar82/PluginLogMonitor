@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace LogMonitor.Core.AllUsers
 {
     public static class ReportAllUsers
     {
-        public static string GetReportMessage(MonitorAcadUsers apm)
+        [NotNull]
+        public static string GetReportMessage([NotNull] MonitorAcadUsers apm)
         {
             var report = new StringBuilder("Отчет по всем пользователям настроек AutoCAD\n");
 
@@ -46,7 +48,8 @@ namespace LogMonitor.Core.AllUsers
             return report.ToString();
         }
 
-        private static string getReportForUsers(List<UserInfo> users, string title)
+        [NotNull]
+        private static string getReportForUsers([NotNull] List<UserInfo> users, string title)
         {            
             var res = new StringBuilder();
             res.AppendLine();

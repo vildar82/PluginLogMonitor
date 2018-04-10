@@ -1,21 +1,24 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace LogMonitor.Core
 {
    public class Presenter
    {
-      private Dictionary<string, PluginLog> _pluginsLog;
+      private readonly ConcurrentDictionary<string, PluginLog> _pluginsLog;
 
-      public Presenter(Dictionary<string, PluginLog> pluginsLog)
+      public Presenter(ConcurrentDictionary<string, PluginLog> pluginsLog)
       {
          _pluginsLog = pluginsLog;
       }
 
+      [NotNull]
       public string GetBody()
       {
          var sbBody = new StringBuilder();
@@ -33,6 +36,7 @@ namespace LogMonitor.Core
          return sbBody.ToString();
       }
 
+      [NotNull]
       public DataTable GetDataTable()
       {
          var table = new DataTable("Отчет лог мониторинга");
@@ -66,10 +70,12 @@ namespace LogMonitor.Core
             date = date.Replace(c, '.');
          }
 
-         var fileName = Path.Combine(LogService.LocalSavePath, $"PluginLogs-{date}.{"txt"}");
+         var fileName = Path.Combine(LogService.LocalSavePath, $"PluginLogs-{date}.txt");
 
          try
          {
+            var dir = Path.GetDirectoryName(fileName);
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir ?? throw new InvalidOperationException());
             File.WriteAllText(fileName, body);
          }
          catch (Exception ex)

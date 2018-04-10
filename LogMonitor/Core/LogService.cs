@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using LogMonitor.Core.AllUsers;
 
 namespace LogMonitor.Core
@@ -38,17 +41,17 @@ namespace LogMonitor.Core
             _timer.Dispose();
         }
 
-        private Dictionary<string, PluginLog> GetPluginsLog ()
+        private ConcurrentDictionary<string, PluginLog> GetPluginsLog ()
         {
             var dirLog = new DirectoryInfo(_logPath);
             var filesLog = dirLog.GetFiles("*.log");
-            var logAnalizer = new LogAnalizer(LastScan);
-            foreach (var file in filesLog)
+            Parallel.ForEach(filesLog, l =>
             {
-                var logLines = File.ReadAllLines(file.FullName, Encoding.Default);
-                logAnalizer.AnalisLogLines(logLines, Path.GetFileNameWithoutExtension(file.Name));
-            }
-            return logAnalizer.PluginsLog;
+                var logAnalizer = new LogAnalizer(LastScan);
+                var logLines = File.ReadAllLines(l.FullName, Encoding.Default);
+                logAnalizer.AnalisLogLines(logLines, Path.GetFileNameWithoutExtension(l.Name));
+            });
+            return LogAnalizer.PluginsLog;
         }
 
         private void ScanLogsAndSendReport ()
@@ -86,6 +89,7 @@ namespace LogMonitor.Core
             LastScan = DateTime.Now;
         }
 
+	    [NotNull]
 	    public static string GetUserLogs(string user)
 	    {
 		    var userLogFiles = new DirectoryInfo(_logPath).EnumerateFiles($"{user}*", SearchOption.TopDirectoryOnly)

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using LogMonitor.Core;
 using LogMonitor.Core.AddNewUsers;
 using LogMonitor.Core.AllUsers;
@@ -33,7 +34,7 @@ namespace LogMonitor
             var formAcadUsers = new FormMonitorAcadUsers(_reportMonitorAcadUsers);
             formAcadUsers.Show();
 
-            var frmNewUsers = new Core.NewUser.FormNewUsers ();
+            var frmNewUsers = new FormNewUsers ();
             frmNewUsers.Show();
 
 	        // Новые ползователи
@@ -51,7 +52,7 @@ namespace LogMonitor
             _reportMonitorAcadUsers = monitorAcadUsers.Report;
         }
 
-        private void ShowFormMonitoringAcadUsers (MonitorAcadUsers monitorAcadUsers)
+        private void ShowFormMonitoringAcadUsers ([NotNull] MonitorAcadUsers monitorAcadUsers)
         {
             var formMonitoracadUsers = new FormMonitorAcadUsers(monitorAcadUsers.Report);
             formMonitoracadUsers.Show();
@@ -71,6 +72,7 @@ namespace LogMonitor
 	        UpdateState();
 		}
 
+	    [NotNull]
 	    private Task ScanLogs()
 	    {
 			return Task.Run(() =>

@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace LogMonitor.Core.AllUsers
 {
@@ -25,7 +26,7 @@ namespace LogMonitor.Core.AllUsers
             return Login.Equals(other.Login, StringComparison.OrdinalIgnoreCase);
         }
 
-        public int CompareTo(UserInfo other)
+        public int CompareTo([NotNull] UserInfo other)
         {
             return Login.CompareTo(other.Login);
         }
