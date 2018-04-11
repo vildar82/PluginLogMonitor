@@ -19,6 +19,8 @@ namespace LogMonitor.Core.NewUser
         public string WorkGroup { get; set; }
         public string FIO { get; internal set; }
         public List<string> WorkGroups { get; internal set; }
+        public string Department { get; set; }
+        public string Position { get; set; }
 
         public NewUserInfo (string userName)
         {
@@ -27,7 +29,7 @@ namespace LogMonitor.Core.NewUser
 
         public override string ToString ()
         {
-            return $"FIO={FIO}; UserName={UserName}; Workgroup={WorkGroup}; WorkGroups={string.Join(",", WorkGroups)}";
+            return $"FIO={FIO}; UserName={UserName}; Workgroup={WorkGroup}; Position{Position}; Department={Department}; WorkGroups={string.Join(",", WorkGroups)}";
         }
     }
 }

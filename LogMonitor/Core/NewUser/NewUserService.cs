@@ -29,6 +29,8 @@ namespace LogMonitor.Core.NewUser
 		    {
 			    MessageBox.Show($@"Не найден юзер '{userLogin}'");
 		    }
+			user.Position = userGroupsAD?.Position;
+		    user.Department = userGroupsAD?.Department;
 		    user.FIO = fio;
 		    var userGroupAD = GetGroupADName(userGroup);
 		    if (userGroupAD == null)
@@ -69,7 +71,7 @@ namespace LogMonitor.Core.NewUser
 
 	    private static bool CheckNewUser(string userName)
 	    {
-// Проверка проверялся ли уже этот пользователь в этом сеансе                    
+			// Проверка проверялся ли уже этот пользователь в этом сеансе                    
 		    if (IsCheckedUser(userName)) return true;
 
 		    var user = new NewUserInfo(userName);
@@ -79,6 +81,8 @@ namespace LogMonitor.Core.NewUser
 
 		    // Определение рабочей группы пользователя
 		    var userInfo = DefineUserGroup(user);
+		    user.Position = userInfo.Position;
+		    user.Department = userInfo.Department;
 		    if (user.WorkGroup != null)
 		    {
 			    // Регистрация пользователя - добавление в файл UserList2.xlsx
