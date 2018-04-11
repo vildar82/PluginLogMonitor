@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 
 namespace LogMonitor.Core.AllUsers
@@ -21,6 +22,10 @@ namespace LogMonitor.Core.AllUsers
             GroupAD = group;
         }
 
+        public string Department { get; set; }
+        public string Position { get; set; }
+        public List<string> Groups { get; set; }
+
         public bool Equals(UserInfo other)
         {
             return Login.Equals(other.Login, StringComparison.OrdinalIgnoreCase);
@@ -33,8 +38,7 @@ namespace LogMonitor.Core.AllUsers
 
         public override bool Equals(object obj)
         {
-            var u = obj as UserInfo;
-            return u != null && u.Login == Login;
+            return obj is UserInfo u && u.Login == Login;
         }
 
         public override int GetHashCode()

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using JetBrains.Annotations;
 using LogMonitor.Core.AllUsers;
 
@@ -23,9 +24,17 @@ namespace LogMonitor.Core.NewUser
 		    var user = new NewUserInfo(userLogin) { WorkGroup = userGroup};
 			// Проверка групп пользователя
 		    var userGroupsAD = ADUtils.GetUserGroups(user.UserName, out var fio);
+		    if (userGroupsAD == null)
+		    {
+			    MessageBox.Show($@"Не найден юзер '{userLogin}'");
+		    }
 		    user.FIO = fio;
 		    var userGroupAD = GetGroupADName(userGroup);
-		    if (!userGroupsAD.Any(g => g.Equals(userGroupAD, StringComparison.OrdinalIgnoreCase)))
+		    if (userGroupAD == null)
+		    {
+			    MessageBox.Show($@"Не определена специальность пользователя по группе {userGroup} юзер {userLogin}");
+		    }
+		    else if (!userGroupsAD.Groups.Any(g => g.Equals(userGroupAD, StringComparison.OrdinalIgnoreCase)))
 		    {
 			    // добавить пользователя в группу AD
 			    ADUtils.AddUserToGroup(user.UserName, userGroupAD);
@@ -157,28 +166,51 @@ namespace LogMonitor.Core.NewUser
         /// <returns></returns>
         private static bool DefineUserGroup ([NotNull] NewUserInfo user)
         {
-			var userGroups = ADUtils.GetUserGroups(user.UserName, out var fio);
+			var userInfo = ADUtils.GetUserGroups(user.UserName, out var fio);
+	        if (userInfo == null)
+	        {
+		        MessageBox.Show($@"Не найден юзер {user.UserName}");
+	        }
 			user.FIO = fio;
-            var userWorkGroups = _ecpWorkGroups.Intersect(userGroups).ToList();
-            user.WorkGroups = userWorkGroups;
-            foreach (var item in userWorkGroups)
-            {
-                // определить шифр отдела по рабочей группе
-                var wg = GetWorkGroupName(item);
-                if (!string.IsNullOrEmpty(wg))
-                {
-                    user.WorkGroup = wg;
-                    return true;
-                }
-            }                                                    
+            user.WorkGroups = userInfo.Groups;
+	        user.WorkGroup = GetWorkGroupName(userInfo.Position);
             return false;
         }
 
-        [CanBeNull]
-        private static string GetWorkGroupName ([NotNull] string group)
+	    private static string GetWorkGroupName(string position)
+	    {
+		    if (position.Contains("генерального плана")) return "ГП";
+
+		    if (position.Contains("Архитектор")) return "АР";
+
+		    if (position.StartsWith("внешних сетей")) return "НС";
+
+		    if (position.Contains("сигнализ") || position.Contains("слаботоч") ||
+		        position.Contains("автоматиз") || position.Contains("СС")) return "СС";
+
+		    if (position.Contains("электросн")) return "ЭО";
+
+		    if (position.Contains("отопления") || position.Contains("ОВ") ||
+		        position.Contains("тепломех") ||  position.Contains("тепловых")) return "ОВ";
+
+		    if (position.Contains("водоснабж") || position.Contains("ВВ")) return "ВК";
+
+		    if (position.Contains("конструктор")) return "КР-МН";
+
+		    if (position.Contains("сборному")) return "КР-СБ";
+
+		    if (position.Contains("Архивариус-делопроизводитель")) return "ДО";
+
+		    if (position.Contains("Руководитель проекта")) return "РП";            
+		    return null;
+	    }
+
+	    [CanBeNull]
+        private static string GetWorkGroupNameByGroup ([NotNull] string group)
         {
             if (group.Contains("_GP") || group.Contains("_KG")) return "ГП_Тест";
             if (group.Contains("_AR")) return "АР";
+	        if (group.StartsWith("006810") || group.Contains("_NS")) return "НС";
             if (group.Contains("_AK")) return "СС";
             if (group.Contains("_EO")) return "ЭО";
             if (group.Contains("_OV")) return "ОВ";

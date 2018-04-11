@@ -18,7 +18,7 @@ namespace LogMonitor.Core.NewUser
         /// </summary>
         public string WorkGroup { get; set; }
         public string FIO { get; internal set; }
-        public IEnumerable<string> WorkGroups { get; internal set; }
+        public List<string> WorkGroups { get; internal set; }
 
         public NewUserInfo (string userName)
         {

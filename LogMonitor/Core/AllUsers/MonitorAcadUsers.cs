@@ -182,7 +182,11 @@ namespace LogMonitor.Core.AllUsers
         {
             // Определение пользователя по имени лог файла
             var loginByLog = GetLoginByFileLogNam(log);
-            var userlog = UsersLog.Find(u => IsEqualLogins(loginByLog, u.Login));
+            UserInfo userlog;
+            lock (loginByLog)
+            {
+                userlog = UsersLog.Find(u => IsEqualLogins(loginByLog, u.Login));
+            }
             if (userlog == null)
             {
                 userlog = new UserInfo(loginByLog, loginByLog, "");

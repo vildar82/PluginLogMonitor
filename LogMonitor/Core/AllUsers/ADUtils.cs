@@ -14,6 +14,8 @@ namespace LogMonitor.Core.AllUsers
 	    private const string domainMain = "main.picompany.ru";
 		private const string domainDsk2 = "dsk2.picompany.ru";
 
+		private static Dictionary<string, UserInfo> dictUserInfo = new Dictionary<string, UserInfo>();
+
         /// <summary>
         /// Получить базовый основной контекст
         /// </summary>        
@@ -96,14 +98,32 @@ namespace LogMonitor.Core.AllUsers
         /// <summary>
         /// Список групп пользователя
         /// </summary>        
-        [NotNull]
-        public static List<string> GetUserGroups (string userName, out string fio)
+        [CanBeNull]
+        public static UserInfo GetUserGroups ([NotNull] string userName, out string fio)
         {
-	        using (var oUserPrincipal = GetUser(userName))
+			if (!dictUserInfo.TryGetValue(userName, out var userInfo))
 	        {
-		        fio = oUserPrincipal.DisplayName;
-		        return oUserPrincipal.GetGroups().Select(s => s.Name).ToList();
+		        using (var oUserPrincipal = GetUser(userName))
+		        {
+			        if (oUserPrincipal == null)
+			        {
+				        fio = "";
+				        return null;
+			        }
+			        fio = oUserPrincipal.DisplayName;
+			        var de = (DirectoryEntry) oUserPrincipal.GetUnderlyingObject();
+			        var department = de.Properties["department"];
+			        var position = de.Properties["title"];
+			        userInfo = new UserInfo(userName,fio, "")
+			        {
+				        Department = department.Value?.ToString(),
+				        Position = position.Value?.ToString(),
+				        Groups = oUserPrincipal.GetGroups().Select(s => s.Name).ToList()
+			        };
+		        }
 	        }
+	        fio = userInfo.Name;
+	        return userInfo;
         }
 
         private static void IterateGroup ([NotNull] GroupPrincipal group, HashSet<UserInfo> usersHash)

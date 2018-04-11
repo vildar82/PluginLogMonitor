@@ -29,28 +29,34 @@ namespace LogMonitor.Core.CheckUser
 				// Наличие в UserList
 				if (NewUserService.IsUserExistInExcelUserList(user, out var group))
 				{
-					textBoxExistInUserList.Text = "Есть";
+					textBoxExistInUserList.Text = @"Есть";
 					textBoxUserListGroup.Text = group;
 					textBoxUserListGroupAD.Text = NewUserService.GetGroupADName(group);
 				}
 				else
 				{
-					textBoxExistInUserList.Text = "Нет";
+					textBoxExistInUserList.Text = @"Нет";
 					textBoxUserListGroup.Text = "";
 					textBoxUserListGroupAD.Text = "";
 				}
 
 				// Проверка AD
-				var groupsAD = ADUtils.GetUserGroups(user, out var fio);
-				textBoxFIO.Text = fio;
-				listBoxADGroups.DataSource = groupsAD;
-				if (!string.IsNullOrEmpty(textBoxUserListGroupAD.Text))
+				var userAd = ADUtils.GetUserGroups(user, out var fio);
+				if (userAd != null)
 				{
-					textBoxADGroup.Text = groupsAD.Any(a => a == textBoxUserListGroupAD.Text).ToString();
+					textBoxFIO.Text = fio;
+					listBoxADGroups.DataSource = userAd.Groups;
+					if (!string.IsNullOrEmpty(textBoxUserListGroupAD.Text))
+					{
+						textBoxADGroup.Text = userAd.Groups.Any(a => a == textBoxUserListGroupAD.Text).ToString();
+					}
+					// Проверка логов
+					AddLogs(user);
 				}
-
-				// Проверка логов
-				AddLogs(user);
+				else
+				{
+					MessageBox.Show($@"Не найден юзер '{user}'");
+				}
 			}
 			catch (Exception ex)
 			{
