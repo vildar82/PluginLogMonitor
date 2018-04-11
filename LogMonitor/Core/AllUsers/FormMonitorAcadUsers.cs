@@ -21,10 +21,13 @@ namespace LogMonitor.Core.AllUsers
 
       private void buttonSave_Click(object sender, EventArgs e)
       {
-         var dialogSaveFile = new SaveFileDialog();
-         dialogSaveFile.AddExtension = true;
-         dialogSaveFile.CheckPathExists = true;
-         dialogSaveFile.DefaultExt = "txt";         
+         var dialogSaveFile = new SaveFileDialog
+         {
+            AddExtension = true,
+            CheckPathExists = true,
+            DefaultExt = "txt"
+         };
+
          if (dialogSaveFile.ShowDialog() == DialogResult.OK)
          {
             File.WriteAllText(dialogSaveFile.FileName, richTextBox1.Text);

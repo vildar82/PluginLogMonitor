@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using JetBrains.Annotations;
+using LogMonitor.Core.AllUsers;
 using LogMonitor.Core.NewUser;
 
 namespace LogMonitor.Core.AddNewUsers
@@ -19,14 +20,14 @@ namespace LogMonitor.Core.AddNewUsers
 			
 		}
 
-		public FormAddNewUsers([CanBeNull] List<string> newUsers)
+		public FormAddNewUsers([CanBeNull] List<UserInfo> newUsers)
 		{
 			InitializeComponent();
 			if (newUsers?.Any() == true)
 			{
 				foreach (var newUser in newUsers)
 				{
-					dgUsers.Rows.Add(newUser);
+					dgUsers.Rows.Add(newUser, newUser.Department, newUser.Position);
 				}
 			}
 		}
@@ -36,7 +37,7 @@ namespace LogMonitor.Core.AddNewUsers
 			foreach (DataGridViewRow dgUsersRow in dgUsers.Rows)
 			{
 				var user = (string) dgUsersRow.Cells[0].Value;
-				var group = (string) dgUsersRow.Cells[1].Value;
+				var group = (string) dgUsersRow.Cells[3].Value;
 				if (string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(group))
 				{
 					continue;

@@ -12,11 +12,12 @@ namespace LogMonitor.Core.NewUser
 {
     public static class NewUserService
     {
+		private static Dictionary<string, string> dictWorkgroup = new Dictionary<string, string>();
         private static readonly List<string> _checkedUsers = new List<string> ();
         private static readonly List<string> _ecpWorkGroups =ADUtils.GetEcpWorkGroups();
 	    private static object lockExcelUserList = new object();
 	    public static List<NewUserInfo> NewUsers { get; } = new List<NewUserInfo>();
-	    public static List<string> addNewUsers { get; } = new List<string>();
+	    public static List<UserInfo> addNewUsers { get; } = new List<UserInfo>();
 		public static List<string> Errors { get; } = new List<string>();
 
 	    public static void RegNewUser(string userLogin, string userGroup)
@@ -77,7 +78,8 @@ namespace LogMonitor.Core.NewUser
 		    if (IsUserExistInExcelUserList(user.UserName, out var _)) return true;
 
 		    // Определение рабочей группы пользователя
-		    if (DefineUserGroup(user))
+		    var userInfo = DefineUserGroup(user);
+		    if (user.WorkGroup != null)
 		    {
 			    // Регистрация пользователя - добавление в файл UserList2.xlsx
 			    RegisterNewUserInExcelUserList(user);
@@ -87,7 +89,7 @@ namespace LogMonitor.Core.NewUser
 		    {
 			    // Не определена рабочая группа пользовтеля - не добавлен в группу ЕЦП
 			    Errors.Add($"Пользователь без группы ЕЦП: user={userName};");
-				addNewUsers.Add(userName);
+				addNewUsers.Add(userInfo);
 		    }
 		    return false;
 	    }
@@ -164,45 +166,43 @@ namespace LogMonitor.Core.NewUser
         /// Определение рабочей группы пользователя
         /// </summary>
         /// <returns></returns>
-        private static bool DefineUserGroup ([NotNull] NewUserInfo user)
+        [NotNull]
+        private static UserInfo DefineUserGroup ([NotNull] NewUserInfo user)
         {
 			var userInfo = ADUtils.GetUserGroups(user.UserName, out var fio);
 	        if (userInfo == null)
 	        {
 		        MessageBox.Show($@"Не найден юзер {user.UserName}");
+		        return new UserInfo(user.FIO, user.UserName, user.WorkGroup);
 	        }
 			user.FIO = fio;
             user.WorkGroups = userInfo.Groups;
-	        user.WorkGroup = GetWorkGroupName(userInfo.Position);
-            return false;
+	        if (!dictWorkgroup.TryGetValue(userInfo.Position, out var wg))
+	        {
+		        wg = GetWorkGroupName(userInfo.Position);
+		        dictWorkgroup.Add(userInfo.Position, wg);
+	        }
+	        user.WorkGroup = wg;
+	        return userInfo;
         }
 
-	    private static string GetWorkGroupName(string position)
+	    [CanBeNull]
+	    private static string GetWorkGroupName([NotNull] string position)
 	    {
 		    if (position.Contains("генерального плана")) return "ГП";
-
-		    if (position.Contains("Архитектор")) return "АР";
-
+		    if (position.Contains("Архитектор") || position.Contains("архитект")) return "АР";
 		    if (position.StartsWith("внешних сетей")) return "НС";
-
 		    if (position.Contains("сигнализ") || position.Contains("слаботоч") ||
 		        position.Contains("автоматиз") || position.Contains("СС")) return "СС";
-
 		    if (position.Contains("электросн")) return "ЭО";
-
 		    if (position.Contains("отопления") || position.Contains("ОВ") ||
-		        position.Contains("тепломех") ||  position.Contains("тепловых")) return "ОВ";
-
+		        position.Contains("тепломех") || position.Contains("тепловых")) return "ОВ";
 		    if (position.Contains("водоснабж") || position.Contains("ВВ")) return "ВК";
-
 		    if (position.Contains("конструктор")) return "КР-МН";
-
 		    if (position.Contains("сборному")) return "КР-СБ";
-
 		    if (position.Contains("Архивариус-делопроизводитель")) return "ДО";
-
-		    if (position.Contains("Руководитель проекта")) return "РП";            
-		    return null;
+		    if (position.Contains("Руководитель проекта")) return "РП";
+		    return "АР";
 	    }
 
 	    [CanBeNull]

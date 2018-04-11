@@ -29,9 +29,11 @@
 		private void InitializeComponent()
 		{
 			this.dgUsers = new System.Windows.Forms.DataGridView();
-			this.Login = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.Group = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.buttonOK = new System.Windows.Forms.Button();
+			this.Login = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.Position = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.Depertment = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.Group = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			((System.ComponentModel.ISupportInitialize)(this.dgUsers)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -43,16 +45,40 @@
 			this.dgUsers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.dgUsers.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Login,
+            this.Position,
+            this.Depertment,
             this.Group});
 			this.dgUsers.Location = new System.Drawing.Point(12, 12);
 			this.dgUsers.Name = "dgUsers";
-			this.dgUsers.Size = new System.Drawing.Size(459, 292);
+			this.dgUsers.Size = new System.Drawing.Size(742, 292);
 			this.dgUsers.TabIndex = 0;
+			// 
+			// buttonOK
+			// 
+			this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.buttonOK.Location = new System.Drawing.Point(679, 310);
+			this.buttonOK.Name = "buttonOK";
+			this.buttonOK.Size = new System.Drawing.Size(75, 23);
+			this.buttonOK.TabIndex = 1;
+			this.buttonOK.Text = "OK";
+			this.buttonOK.UseVisualStyleBackColor = true;
+			this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
 			// 
 			// Login
 			// 
 			this.Login.HeaderText = "Login";
 			this.Login.Name = "Login";
+			// 
+			// Position
+			// 
+			this.Position.HeaderText = "Position";
+			this.Position.Name = "Position";
+			// 
+			// Depertment
+			// 
+			this.Depertment.HeaderText = "Depertment";
+			this.Depertment.Name = "Depertment";
 			// 
 			// Group
 			// 
@@ -62,8 +88,8 @@
             "АР",
             "ВК",
             "ГП",
-			"ГП_Тест",
-			"ГТО",
+            "ГП_Тест",
+            "ГТО",
             "ДО",
             "ЖБК-ТО",
             "КР-МН",
@@ -78,23 +104,11 @@
 			this.Group.Resizable = System.Windows.Forms.DataGridViewTriState.True;
 			this.Group.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
 			// 
-			// buttonOK
-			// 
-			this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.buttonOK.Location = new System.Drawing.Point(396, 310);
-			this.buttonOK.Name = "buttonOK";
-			this.buttonOK.Size = new System.Drawing.Size(75, 23);
-			this.buttonOK.TabIndex = 1;
-			this.buttonOK.Text = "OK";
-			this.buttonOK.UseVisualStyleBackColor = true;
-			this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
-			// 
 			// FormAddNewUsers
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(483, 345);
+			this.ClientSize = new System.Drawing.Size(766, 345);
 			this.Controls.Add(this.buttonOK);
 			this.Controls.Add(this.dgUsers);
 			this.Name = "FormAddNewUsers";
@@ -110,6 +124,8 @@
 		private System.Windows.Forms.DataGridView dgUsers;
 		private System.Windows.Forms.Button buttonOK;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Login;
+		private System.Windows.Forms.DataGridViewTextBoxColumn Position;
+		private System.Windows.Forms.DataGridViewTextBoxColumn Depertment;
 		private System.Windows.Forms.DataGridViewComboBoxColumn Group;
 	}
 }

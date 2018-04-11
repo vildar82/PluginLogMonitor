@@ -15,6 +15,7 @@ namespace LogMonitor.Core.AllUsers
     /// </summary>
     public class MonitorAcadUsers
     {
+        private object lockUsersLog = new object();
         public string Report { get; private set; } = string.Empty;
         public string LogFolder { get; set; } = LogService._logPath;
         public int DaysLookingFor { get; set; } = 31;
@@ -183,7 +184,7 @@ namespace LogMonitor.Core.AllUsers
             // Определение пользователя по имени лог файла
             var loginByLog = GetLoginByFileLogNam(log);
             UserInfo userlog;
-            lock (loginByLog)
+            lock (lockUsersLog)
             {
                 userlog = UsersLog.Find(u => IsEqualLogins(loginByLog, u.Login));
             }
