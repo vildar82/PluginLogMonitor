@@ -49,11 +49,12 @@ namespace LogMonitor.Core.AllUsers
 	    }
 
 	    [NotNull]
-	    public static List<UserInfo> GetUsersInGroup ([NotNull] string groupName)
-        {
+	    public static List<UserInfo> GetUsersInGroup ([NotNull] string groupName, string domain = null)
+	    {
+		    if (domain == null) domain = domainName;
             //string groupName = "adm-dsk3-AutoCADSettings-u";
             var users = new List<UserInfo>();
-	        using (var ctx = GetPrincipalContext(domainName))
+	        using (var ctx = GetPrincipalContext(domain))
 	        {
 		        var group = GroupPrincipal.FindByIdentity(ctx, groupName);
 		        if (group != null)
@@ -114,7 +115,7 @@ namespace LogMonitor.Core.AllUsers
 			        var de = (DirectoryEntry) oUserPrincipal.GetUnderlyingObject();
 			        var department = de.Properties["department"];
 			        var position = de.Properties["title"];
-			        userInfo = new UserInfo(userName,fio, "")
+			        userInfo = new UserInfo(fio,userName, "")
 			        {
 				        Department = department.Value?.ToString(),
 				        Position = position.Value?.ToString(),
